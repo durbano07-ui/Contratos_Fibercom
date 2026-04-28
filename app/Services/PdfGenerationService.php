@@ -13,7 +13,7 @@ class PdfGenerationService
      */
     public function generateAndSave(Contract $contract)
     {
-        $contract->load(['client', 'plan.type', 'user']);
+        $contract->load(['client', 'plan.type', 'user', 'anexo2']);
 
         $pdf = Pdf::loadView('contracts.pdf', compact('contract'));
 
@@ -31,7 +31,7 @@ class PdfGenerationService
      */
     public function streamPdf(Contract $contract)
     {
-        $contract->load(['client', 'plan.type', 'user']);
+        $contract->load(['client', 'plan.type', 'user', 'anexo2']);
         return Pdf::loadView('contracts.pdf', compact('contract'))
             ->stream('contrato_' . $contract->id_contrato . '.pdf');
     }

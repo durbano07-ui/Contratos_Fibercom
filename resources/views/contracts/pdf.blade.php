@@ -198,6 +198,12 @@
         {{-- CONTRATO PRINCIPAL --}}
         <h1>CONTRATO DE ADHESION</h1>
 
+        @php
+            $signatureImg = ($contract->anexo2 && $contract->anexo2->firma_cliente)
+                ? $contract->anexo2->firma_cliente
+                : null;
+        @endphp
+
         {{-- CLAUSULA PRIMERA --}}
         <div class="clause-title">CLAUSULA PRIMERA. Lugar y fecha. - Guaranda,
             {{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('d \d\e F \d\e Y') }}
@@ -468,7 +474,12 @@
             telecomunicaciones).<br>
             SI__X___ NO______</p>
         <p>Firma de aceptación-sujeción a arbitraje:</p>
-        <p style="margin-top: 50px;">_________________________</p>
+        <p style="margin-top: 10px;">
+            @if($signatureImg)
+                <img src="{{ $signatureImg }}" style="max-height: 50px; width: auto; margin-bottom: -15px;"><br>
+            @endif
+            _________________________
+        </p>
 
         {{-- CLAUSULA DECIMA TERCERA --}}
         <div class="clause-title">CLAUSULA DECIMA TERCERA. - Anexos:</div>
@@ -505,6 +516,9 @@
         <table class="signature-table">
             <tr>
                 <td>
+                    @if($signatureImg)
+                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                    @endif
                     _________________________<br>
                     <strong>{{ mb_strtoupper($contract->client->nombre) }}
                         {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>
@@ -663,7 +677,11 @@
         <p><strong>Autorización expresa de las partes:</strong></p>
         <table class="signature-table">
             <tr>
-                <td>_________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
+                <td>
+                    @if($signatureImg)
+                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                    @endif
+                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
                         {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
                     {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
                 </td>
@@ -780,7 +798,11 @@
         <p><strong>Autorización expresa de las partes:</strong></p>
         <table class="signature-table">
             <tr>
-                <td>_________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
+                <td>
+                    @if($signatureImg)
+                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                    @endif
+                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
                         {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
                     {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
                 </td>
@@ -792,57 +814,61 @@
         <div class="page-break"></div>
         <div class="anexo-title">ANEXO 3</div>
         <p><strong>ACTA DE INSTALACION Y ACTIVACION</strong></p>
-        <p class="input-line">Fecha y hora de instalación: <strong>{{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('d \d\e F \d\e Y') }} {{ \Carbon\Carbon::parse($contract->hora_creacion)->format('H:i') }}</strong><br>
+        <p class="input-line">Fecha y hora de instalación: <strong>{{ \Carbon\Carbon::parse($contract->anexo2->completado_en ?? $contract->fecha)->translatedFormat('d \d\e F \d\e Y') }} {{ \Carbon\Carbon::parse($contract->anexo2->completado_en ?? $contract->hora_creacion)->format('H:i') }}</strong><br>
             Lugar de la instalación: <strong>{{ mb_strtoupper($contract->direccion_servicio ?? $contract->direccion_instalacion ?? $contract->client->direccion) }}</strong><br>
-            IP asignada al cliente: _______________________________________________________</p>
+            IP asignada al cliente: <strong>{{ $contract->anexo2->datos_anexo3['ip_asignada'] ?? '__________________________________' }}</strong></p>
 
         <table class="table-fillable">
             <tr>
                 <td>Cliente verificó ancho de banda instalado</td>
-                <td style="width: 10%;">SI</td>
-                <td style="width: 10%;">NO</td>
+                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && isset($contract->anexo2->datos_anexo3['verifico_ancho_banda'])) ? 'SI' : '' }}</td>
+                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && !isset($contract->anexo2->datos_anexo3['verifico_ancho_banda'])) ? 'NO' : '' }}</td>
             </tr>
         </table>
 
-        <p class="input-line">Características de la computadora del cliente: __________________________________<br>
+        <p class="input-line">Características de la computadora del cliente: <strong>{{ $contract->anexo2->datos_anexo3['caracteristicas_pc'] ?? '__________________________________' }}</strong><br>
             ______________________________________________________________________________</p>
         <table class="table-compact">
             <tr>
                 <td>Cliente tiene puesta a tierra</td>
-                <td style="width: 10%;">SI</td>
-                <td style="width: 10%;">NO</td>
+                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && isset($contract->anexo2->datos_anexo3['puesta_a_tierra'])) ? 'SI' : '' }}</td>
+                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && !isset($contract->anexo2->datos_anexo3['puesta_a_tierra'])) ? 'NO' : '' }}</td>
             </tr>
         </table>
 
         <table class="table-fillable">
             <tr>
                 <td>Cliente pide bloqueo de páginas web</td>
-                <td style="width: 5%;">SI</td>
-                <td style="width: 5%;">NO</td>
-                <td style="width: 40%;">DETALLE:</td>
+                <td style="width: 5%; text-align: center;">{{ ($contract->anexo2 && ($contract->anexo2->datos_anexo3['bloqueo_web'] ?? '') != 'No') ? 'SI' : 'NO' }}</td>
+                <td style="width: 5%;"></td>
+                <td style="width: 40%;">DETALLE: <strong>{{ $contract->anexo2->datos_anexo3['bloqueo_web'] ?? '' }}</strong></td>
             </tr>
             <tr>
                 <td>Cliente pide bloqueo de servicios</td>
-                <td>SI</td>
-                <td>NO</td>
-                <td>DETALLE:</td>
+                <td style="text-align: center;">{{ ($contract->anexo2 && ($contract->anexo2->datos_anexo3['bloqueo_servicios'] ?? '') != 'No') ? 'SI' : 'NO' }}</td>
+                <td></td>
+                <td>DETALLE: <strong>{{ $contract->anexo2->datos_anexo3['bloqueo_servicios'] ?? '' }}</strong></td>
             </tr>
             <tr>
                 <td>Cliente pide bloqueo de puertos</td>
-                <td>SI</td>
-                <td>NO</td>
-                <td>DETALLE:</td>
+                <td style="text-align: center;">{{ ($contract->anexo2 && ($contract->anexo2->datos_anexo3['bloqueo_puertos'] ?? '') != 'No') ? 'SI' : 'NO' }}</td>
+                <td></td>
+                <td>DETALLE: <strong>{{ $contract->anexo2->datos_anexo3['bloqueo_puertos'] ?? '' }}</strong></td>
             </tr>
             <tr>
                 <td colspan="3" style="height: 60px;">DETALLE DE MATERIAL UTILIZADO PARA INSTALACION POR PARTE DE
                     PRESTADOR</td>
-                <td></td>
+                <td><strong>{{ $contract->anexo2->datos_anexo3['material_utilizado'] ?? '' }}</strong></td>
             </tr>
         </table>
         <p><strong>Autorización expresa de las partes:</strong></p>
         <table class="signature-table">
             <tr>
-                <td>_________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
+                <td>
+                    @if($signatureImg)
+                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                    @endif
+                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
                         {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
                     {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
                 </td>
@@ -900,7 +926,11 @@
         <p><strong>Autorización expresa de las partes:</strong></p>
         <table class="signature-table">
             <tr>
-                <td>_________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
+                <td>
+                    @if($signatureImg)
+                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                    @endif
+                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
                         {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
                     {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
                 </td>
@@ -926,7 +956,11 @@
         <p>Fecha de validez: {{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('d \d\e F \d\e Y') }}</p>
         <table class="signature-table">
             <tr>
-                <td>_________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
+                <td>
+                    @if($signatureImg)
+                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                    @endif
+                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
                         {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
                     {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
                 </td>

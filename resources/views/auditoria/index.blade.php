@@ -12,8 +12,8 @@
 <span class="font-headline text-3xl font-bold text-white">{{ number_format($eventos_totales) }}</span>
 </div>
 <div class="flex flex-col border-l border-white/10 pl-8">
-<span class="font-label text-[10px] uppercase tracking-[0.15em] text-on-primary-container mb-1">Críticos (24h)</span>
-<span class="font-headline text-3xl font-bold text-tertiary-fixed-dim">{{ str_pad($criticos_24h, 2, '0', STR_PAD_LEFT) }}</span>
+<span class="font-label text-[10px] uppercase tracking-[0.15em] text-on-primary-container mb-1">Usuarios Dados de Baja</span>
+<span class="font-headline text-3xl font-bold text-tertiary-fixed-dim">{{ str_pad($bajas_periodo, 2, '0', STR_PAD_LEFT) }}</span>
 </div>
 <div class="flex flex-col border-l border-white/10 pl-8">
 <span class="font-label text-[10px] uppercase tracking-[0.15em] text-on-primary-container mb-1">Usuarios Activos</span>
@@ -35,14 +35,33 @@
 <div class="px-6 py-4 flex justify-between items-center bg-surface-container-low border-b border-outline-variant/10">
 <h3 class="font-headline font-bold text-lg text-primary ml-2">Logs del Sistema</h3>
 <div class="flex space-x-2">
-<button class="bg-surface-container-low text-primary px-5 py-2.5 rounded-lg flex items-center space-x-2 hover:bg-surface-container-high transition-colors text-sm font-semibold border border-outline-variant/30">
-<span class="material-symbols-outlined text-lg" data-icon="filter_list">filter_list</span>
-<span>Filtrar</span>
-</button>
-<button class="bg-primary text-on-primary px-5 py-2.5 rounded-lg flex items-center space-x-2 hover:bg-primary-container hover:text-primary transition-colors text-sm font-semibold shadow-lg shadow-primary/10">
-<span class="material-symbols-outlined text-lg" data-icon="download">download</span>
-<span>Exportar CSV</span>
-</button>
+<form action="{{ route('auditoria.index') }}" method="GET" class="flex space-x-2">
+    <select name="month" class="bg-surface-container-low text-primary px-3 py-2 rounded-lg text-sm font-semibold border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
+        @foreach(range(1, 12) as $m)
+            <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
+                {{ Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+            </option>
+        @endforeach
+    </select>
+    <select name="year" class="bg-surface-container-low text-primary px-3 py-2 rounded-lg text-sm font-semibold border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
+        @if($years->isEmpty())
+            <option value="{{ now()->year }}">{{ now()->year }}</option>
+        @else
+            @foreach($years as $y)
+                <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+            @endforeach
+        @endif
+    </select>
+    <button type="submit" class="bg-surface-container-low text-primary px-5 py-2.5 rounded-lg flex items-center space-x-2 hover:bg-surface-container-high transition-colors text-sm font-semibold border border-outline-variant/30">
+        <span class="material-symbols-outlined text-lg" data-icon="filter_list">filter_list</span>
+        <span>Filtrar</span>
+    </button>
+</form>
+
+<a href="{{ route('auditoria.export', ['month' => $month, 'year' => $year]) }}" class="bg-primary text-on-primary px-5 py-2.5 rounded-lg flex items-center space-x-2 hover:bg-primary-container hover:text-primary transition-colors text-sm font-semibold shadow-lg shadow-primary/10">
+    <span class="material-symbols-outlined text-lg" data-icon="download">download</span>
+    <span>Exportar CSV</span>
+</a>
 </div>
 </div>
 

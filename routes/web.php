@@ -84,6 +84,7 @@ Route::middleware(['auth', 'role:administrador'])->group(function () {
 
     // Auditoría
     Route::get('/auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
+    Route::get('/auditoria/export', [AuditoriaController::class, 'exportCsv'])->name('auditoria.export');
 });
 
 // -------------------------------------------------------

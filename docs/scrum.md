@@ -1,4 +1,4 @@
-# Metodología de Desarrollo: Scrum
+   # Metodología de Desarrollo: Scrum
 
 Para el desarrollo del **Sistema de Contratos - Fibercom**, se implementó la metodología ágil **Scrum**, adaptando el ciclo de vida del software a un periodo intensivo de **4 semanas**.
 

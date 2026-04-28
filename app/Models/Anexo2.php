@@ -20,6 +20,8 @@ class Anexo2 extends Model
         'valor_mensual_arrendamiento',
         'valor_mensual_compra_credito',
         'cantidad_meses',
+        'firma_cliente',
+        'datos_anexo3',
         'completado_en',
     ];
 
@@ -28,6 +30,7 @@ class Anexo2 extends Model
         'compra_credito'   => 'boolean',
         'arrendamiento'    => 'boolean',
         'compra_contado'   => 'boolean',
+        'datos_anexo3'     => 'array',
         'completado_en'    => 'datetime',
     ];
 

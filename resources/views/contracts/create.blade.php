@@ -282,7 +282,7 @@
         function fetchPlans(tipoId) {
             plansContainer.innerHTML = '<div class="col-span-3 text-center py-8 font-bold text-sm text-primary animate-pulse">Cargando planes del catálogo...</div>';
             
-            fetch(`/api/plans/by-type/${tipoId}`)
+            fetch(`{{ url('/api/plans/by-type/') }}/${tipoId}`)
                 .then(response => response.json())
                 .then(plans => {
                     plansContainer.innerHTML = '';

@@ -184,7 +184,7 @@
         }
 
         /* ================================================
-           TARJETA DE EQUIPO (MODO SELECCIÓN)
+           TARJETA DE EQUIPO (MANUAL)
         ================================================ */
         .equipo-card {
             background: #f9f9f9;
@@ -206,7 +206,6 @@
             }
         }
 
-        /* Header de la tarjeta: muestra el equipo seleccionado */
         .equipo-card-head {
             display: flex;
             align-items: center;
@@ -241,101 +240,10 @@
             text-overflow: ellipsis;
         }
 
-        .equipo-selected-name.placeholder-text {
-            opacity: 0.35;
-            font-weight: 600;
-            font-style: italic;
-        }
-
-        .equipo-selected-cat {
-            font-size: 0.6rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #b6171e;
-            background: #fff1f1;
-            padding: 0.15rem 0.5rem;
-            border-radius: 99px;
-            white-space: nowrap;
-        }
-
-        /* Body de la tarjeta: select + campos */
         .equipo-card-body {
             padding: 1rem 1.1rem;
         }
 
-        /* El select de equipo tiene estilo especial */
-        .equipo-select-wrap {
-            margin-bottom: 0.85rem;
-        }
-
-        .equipo-catalog-select {
-            width: 100%;
-            background: #fff;
-            border: 2px solid #c4c7c7;
-            border-radius: 0.4rem;
-            padding: 0.6rem 0.75rem;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #1a1c1c;
-            -webkit-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23444' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            padding-right: 2rem;
-            cursor: pointer;
-            transition: border-color 0.15s;
-        }
-
-        .equipo-catalog-select:focus {
-            outline: none;
-            border-color: #b6171e;
-            box-shadow: 0 0 0 3px rgba(182, 23, 30, 0.12);
-        }
-
-        .equipo-catalog-select option[disabled] {
-            color: #aaa;
-            font-style: italic;
-        }
-
-        /* Grid de campos secundarios */
-        .equipo-fields-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.65rem;
-        }
-
-        @media (min-width: 480px) {
-            .equipo-fields-grid {
-                grid-template-columns: 80px 1fr 120px;
-            }
-        }
-
-        /* Badge de stock */
-        .stock-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 0.58rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 0.15rem 0.5rem;
-            border-radius: 99px;
-        }
-
-        .stock-ok {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .stock-low {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        /* Botón eliminar tarjeta */
         .btn-remove-card {
             display: flex;
             align-items: center;
@@ -527,22 +435,47 @@
         .page-wrapper {
             padding-bottom: 5rem;
         }
+
+        /* ================================================
+           FIRMA PAD
+        ================================================ */
+        .signature-container {
+            position: relative;
+            width: 100%;
+            background: #fff;
+            border: 2px solid #c4c7c7;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .signature-pad {
+            width: 100%;
+            height: 200px;
+            touch-action: none;
+            border-radius: 0.5rem;
+        }
+        .signature-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        .btn-clear {
+            background: transparent;
+            color: #b6171e;
+            border: 1px solid #b6171e;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.3rem;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
     </style>
 @endpush
 
 @section('content')
-    {{-- Pasamos el catálogo como JSON para el JS --}}
-    @php
-        $catalogJson = $equipmentCatalog->map(fn($items) => $items->map(fn($e) => [
-            'id' => $e->id,
-            'nombre' => $e->nombre,
-            'categoria' => $e->categoria,
-            'stock' => $e->stock,
-            'stock_minimo' => $e->stock_minimo,
-            'unidad' => $e->unidad,
-        ]))->toJson();
-    @endphp
-
     <div class="max-w-2xl mx-auto page-wrapper">
 
         {{-- Back --}}
@@ -570,7 +503,7 @@
         <div class="mb-6">
             <div class="flex justify-between text-[9px] font-black uppercase tracking-widest opacity-50 mb-1.5">
                 <span>Progreso del formulario</span>
-                <span id="progress-label">0 / 2 secciones</span>
+                <span id="progress-label">0 / 4 secciones</span>
             </div>
             <div class="progress-bar-track">
                 <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
@@ -579,6 +512,17 @@
 
         <form action="{{ route('tecnico.anexo2.store', $contract->id_contrato) }}" method="POST" id="anexo2-form">
             @csrf
+
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p class="font-bold mb-1">Por favor corrige los siguientes errores:</p>
+                    <ul class="text-xs list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="space-y-4">
 
@@ -595,86 +539,65 @@
                     <div class="section-body open" id="body-equipos">
                         <div class="section-body-inner">
 
-                            @if($equipmentCatalog->isEmpty())
-                                <div class="text-center py-8 opacity-40">
-                                    <span class="material-symbols-outlined block text-4xl mb-2">inventory_2</span>
-                                    <p class="text-xs font-bold uppercase tracking-widest">No hay equipos en inventario con
-                                        stock disponible.<br>Comunícate con administración.</p>
-                                </div>
-                            @else
-                                {{-- Lista de tarjetas de equipo --}}
-                                <div class="space-y-3" id="equipos-list">
-                                    {{-- La primera tarjeta se renderiza directamente --}}
-                                    <div class="equipo-card" id="equipo-card-0">
-                                        <div class="equipo-card-head">
-                                            <div class="equipo-num-badge">1</div>
-                                            <span class="equipo-selected-name placeholder-text" id="eq-name-0">Selecciona un
-                                                equipo...</span>
-                                            <span class="equipo-selected-cat" id="eq-cat-0" style="display:none;"></span>
-                                            <button type="button" class="btn-remove-card remove-equipo" title="Eliminar">
-                                                <span class="material-symbols-outlined">close</span>
-                                            </button>
-                                        </div>
-                                        <div class="equipo-card-body">
-                                            {{-- Selector del catálogo --}}
-                                            <div class="equipo-select-wrap">
-                                                <select name="equipos[0][equipment_id]" required class="equipo-catalog-select"
-                                                    onchange="onEquipoSelected(this, 0)">
-                                                    <option value="" disabled selected>— Buscar en inventario —</option>
-                                                    @foreach($equipmentCatalog as $categoria => $items)
-                                                        <optgroup label="📦 {{ strtoupper($categoria) }}">
-                                                            @foreach($items as $equipo)
-                                                                <option value="{{ $equipo->id }}" data-nombre="{{ $equipo->nombre }}"
-                                                                    data-categoria="{{ $equipo->categoria }}"
-                                                                    data-stock="{{ $equipo->stock }}"
-                                                                    data-stock-min="{{ $equipo->stock_minimo }}"
-                                                                    data-unidad="{{ $equipo->unidad }}">
-                                                                    {{ $equipo->nombre }} — Stock: {{ $equipo->stock }}
-                                                                    {{ $equipo->unidad }}
-                                                                </option>
-                                                            @endforeach
-                                                        </optgroup>
-                                                    @endforeach
+                            {{-- Lista de tarjetas de equipo --}}
+                            <div class="space-y-3" id="equipos-list">
+                                {{-- La primera tarjeta se renderiza directamente --}}
+                                <div class="equipo-card" id="equipo-card-0">
+                                    <div class="equipo-card-head">
+                                        <div class="equipo-num-badge">1</div>
+                                        <span class="equipo-selected-name" id="eq-name-0">Equipo</span>
+                                        <button type="button" class="btn-remove-card remove-equipo" title="Eliminar">
+                                            <span class="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+                                    <div class="equipo-card-body">
+                                        <div class="grid grid-cols-2 gap-3 mb-3">
+                                            <div class="field-group">
+                                                <label>Tipo de Equipo</label>
+                                                <select name="equipos[0][categoria]" required>
+                                                    <option value="Router">Router</option>
+                                                    <option value="ONU">ONU</option>
+                                                    <option value="Roseta">Roseta</option>
+                                                    <option value="Otro">Otro</option>
                                                 </select>
                                             </div>
-
-                                            {{-- Stock badge --}}
-                                            <div id="eq-stock-0" style="display:none;" class="mb-3">
-                                                <span id="eq-stock-badge-0" class="stock-badge stock-ok">
-                                                    <span class="material-symbols-outlined"
-                                                        style="font-size:11px;">inventory</span>
-                                                    <span id="eq-stock-text-0"></span>
-                                                </span>
-                                            </div>
-
-                                            {{-- Campos: cantidad, serial, estado --}}
-                                            <div class="equipo-fields-grid">
-                                                <div class="field-group">
-                                                    <label>Cantidad</label>
-                                                    <input type="number" name="equipos[0][cantidad]" value="1" min="1" required>
-                                                </div>
-                                                <div class="field-group">
-                                                    <label>N° Serial / MAC</label>
-                                                    <input type="text" name="equipos[0][serial]" placeholder="Opcional">
-                                                </div>
-                                                <div class="field-group">
-                                                    <label>Estado</label>
-                                                    <select name="equipos[0][estado_equipo]" required>
-                                                        <option value="Nuevo">Nuevo</option>
-                                                        <option value="Usado">Usado</option>
-                                                    </select>
-                                                </div>
+                                            <div class="field-group">
+                                                <label>Estado</label>
+                                                <select name="equipos[0][estado_equipo]" required>
+                                                    <option value="Nuevo">Nuevo</option>
+                                                    <option value="Usado">Usado</option>
+                                                </select>
                                             </div>
                                         </div>
+
+                                        <div class="grid grid-cols-2 gap-3 mb-3">
+                                            <div class="field-group">
+                                                <label>Marca</label>
+                                                <input type="text" name="equipos[0][marca]" placeholder="Ej: TP-Link" required>
+                                            </div>
+                                            <div class="field-group">
+                                                <label>Modelo</label>
+                                                <input type="text" name="equipos[0][modelo]" placeholder="Ej: Archer C6" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="field-group">
+                                            <label>N° Serial / MAC</label>
+                                            <input type="text" name="equipos[0][serial]" placeholder="Opcional">
+                                        </div>
+
+                                        {{-- Valores por defecto ocultos --}}
+                                        <input type="hidden" name="equipos[0][cantidad]" value="1">
+                                        <input type="hidden" name="equipos[0][precio_unitario]" value="0">
                                     </div>
                                 </div>
+                            </div>
 
-                                {{-- Botón agregar --}}
-                                <button type="button" id="add-equipment" class="btn-add">
-                                    <span class="material-symbols-outlined">add_circle</span>
-                                    Agregar otro equipo
-                                </button>
-                            @endif
+                            {{-- Botón agregar --}}
+                            <button type="button" id="add-equipment" class="btn-add">
+                                <span class="material-symbols-outlined">add_circle</span>
+                                Agregar otro equipo
+                            </button>
 
                         </div>
                     </div>
@@ -737,6 +660,96 @@
                     </div>
                 </div>
 
+                {{-- ===========================================
+                SECCIÓN 03: ACTA DE INSTALACIÓN (ANEXO 3)
+                =========================================== --}}
+                <div class="section-card" data-section="instalacion">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <span class="section-num">03</span>
+                        <span class="section-title">Acta de Instalación</span>
+                        <span class="section-status pending" id="status-instalacion">Pendiente</span>
+                        <span class="material-symbols-outlined section-chevron">expand_more</span>
+                    </div>
+                    <div class="section-body" id="body-instalacion">
+                        <div class="section-body-inner space-y-4">
+                            
+                            <div class="field-group">
+                                <label>IP Asignada al Cliente</label>
+                                <input type="text" name="datos_anexo3[ip_asignada]" placeholder="0.0.0.0">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="check-card">
+                                    <input type="checkbox" name="datos_anexo3[verifico_ancho_banda]" value="1">
+                                    <span class="check-label">Verificó ancho de banda</span>
+                                </label>
+                                <label class="check-card">
+                                    <input type="checkbox" name="datos_anexo3[puesta_a_tierra]" value="1">
+                                    <span class="check-label">Tiene puesta a tierra</span>
+                                </label>
+                            </div>
+
+                            <div class="field-group">
+                                <label>Características de la Computadora</label>
+                                <input type="text" name="datos_anexo3[caracteristicas_pc]" placeholder="Ej: Laptop Dell, i5, 8GB RAM">
+                            </div>
+
+                            <div class="space-y-3">
+                                <p class="inner-section-title">Bloqueos Solicitados</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div class="field-group">
+                                        <label>Páginas Web</label>
+                                        <input type="text" name="datos_anexo3[bloqueo_web]" placeholder="Detalle o No">
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Servicios</label>
+                                        <input type="text" name="datos_anexo3[bloqueo_servicios]" placeholder="Detalle o No">
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Puertos</label>
+                                        <input type="text" name="datos_anexo3[bloqueo_puertos]" placeholder="Detalle o No">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-group">
+                                <label>Material Utilizado / Observaciones</label>
+                                <textarea name="datos_anexo3[material_utilizado]" 
+                                    class="w-full bg-white border border-[#c4c7c7] rounded-md p-3 text-sm font-bold"
+                                    rows="3" placeholder="Detalle del material extra..."></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ===========================================
+                SECCIÓN 04: FIRMA DEL CLIENTE
+                =========================================== --}}
+                <div class="section-card" data-section="firma">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <span class="section-num">04</span>
+                        <span class="section-title">Firma del Cliente</span>
+                        <span class="section-status pending" id="status-firma">Pendiente</span>
+                        <span class="material-symbols-outlined section-chevron">expand_more</span>
+                    </div>
+                    <div class="section-body" id="body-firma">
+                        <div class="section-body-inner">
+                            <p class="inner-section-title">El cliente debe firmar a continuación</p>
+                            <div class="signature-container">
+                                <canvas id="signature-pad" class="signature-pad"></canvas>
+                                <div class="signature-actions">
+                                    <button type="button" class="btn-clear" id="clear-signature">Limpiar Firma</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="firma_cliente" id="firma_cliente_input" required>
+                            <p class="text-[10px] opacity-50 mt-3 text-center uppercase font-bold tracking-widest">
+                                Use su dedo o un lápiz óptico para firmar dentro del recuadro
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>{{-- fin .space-y-4 --}}
         </form>
     </div>
@@ -755,12 +768,8 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <script>
-        const CATALOG = {!! $catalogJson !!};
-
-        // Aplano el catálogo para búsquedas por ID
-        const CATALOG_FLAT = Object.values(CATALOG).flat();
-
         // ------------------------------------------------
         // ACORDEÓN
         // ------------------------------------------------
@@ -774,65 +783,11 @@
         };
 
         // ------------------------------------------------
-        // ACTUALIZAR HEADER DE TARJETA AL SELECCIONAR
-        // ------------------------------------------------
-        window.onEquipoSelected = function (selectEl, idx) {
-            const opt = selectEl.options[selectEl.selectedIndex];
-            const nombre = opt.dataset.nombre;
-            const cat = opt.dataset.categoria;
-            const stock = parseInt(opt.dataset.stock, 10);
-            const min = parseInt(opt.dataset.stockMin, 10);
-            const unidad = opt.dataset.unidad;
-
-            // Nombre en el header
-            const nameEl = document.getElementById(`eq-name-${idx}`);
-            if (nameEl) {
-                nameEl.textContent = nombre;
-                nameEl.classList.remove('placeholder-text');
-            }
-
-            // Categoría badge
-            const catEl = document.getElementById(`eq-cat-${idx}`);
-            if (catEl) { catEl.textContent = cat; catEl.style.display = ''; }
-
-            // Stock badge
-            const stockWrap = document.getElementById(`eq-stock-${idx}`);
-            const stockBadge = document.getElementById(`eq-stock-badge-${idx}`);
-            const stockText = document.getElementById(`eq-stock-text-${idx}`);
-            if (stockWrap && stockBadge && stockText) {
-                stockWrap.style.display = '';
-                stockText.textContent = `Stock: ${stock} ${unidad}`;
-                stockBadge.className = 'stock-badge ' + (stock <= min ? 'stock-low' : 'stock-ok');
-            }
-
-            updateProgress();
-        };
-
-        // ------------------------------------------------
         // AGREGAR / ELIMINAR EQUIPOS DINÁMICOS
         // ------------------------------------------------
         let equipoIdx = 1;
         const equiposList = document.getElementById('equipos-list');
         const addBtn = document.getElementById('add-equipment');
-
-        function buildOptionsHTML() {
-            let html = '<option value="" disabled selected>— Buscar en inventario —</option>';
-            Object.entries(CATALOG).forEach(([cat, items]) => {
-                html += `<optgroup label="📦 ${cat.toUpperCase()}">`;
-                items.forEach(eq => {
-                    html += `<option value="${eq.id}"
-                    data-nombre="${eq.nombre}"
-                    data-categoria="${eq.categoria}"
-                    data-stock="${eq.stock}"
-                    data-stock-min="${eq.stock_minimo}"
-                    data-unidad="${eq.unidad}">
-                    ${eq.nombre} — Stock: ${eq.stock} ${eq.unidad}
-                </option>`;
-                });
-                html += '</optgroup>';
-            });
-            return html;
-        }
 
         function buildEquipoCard(idx) {
             const card = document.createElement('div');
@@ -841,34 +796,21 @@
             card.innerHTML = `
             <div class="equipo-card-head">
                 <div class="equipo-num-badge">${idx + 1}</div>
-                <span class="equipo-selected-name placeholder-text" id="eq-name-${idx}">Selecciona un equipo...</span>
-                <span class="equipo-selected-cat" id="eq-cat-${idx}" style="display:none;"></span>
+                <span class="equipo-selected-name" id="eq-name-${idx}">Equipo</span>
                 <button type="button" class="btn-remove-card remove-equipo" title="Eliminar">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
             <div class="equipo-card-body">
-                <div class="equipo-select-wrap">
-                    <select name="equipos[${idx}][equipment_id]" required
-                            class="equipo-catalog-select"
-                            onchange="onEquipoSelected(this, ${idx})">
-                        ${buildOptionsHTML()}
-                    </select>
-                </div>
-                <div id="eq-stock-${idx}" style="display:none;" class="mb-3">
-                    <span id="eq-stock-badge-${idx}" class="stock-badge stock-ok">
-                        <span class="material-symbols-outlined" style="font-size:11px;">inventory</span>
-                        <span id="eq-stock-text-${idx}"></span>
-                    </span>
-                </div>
-                <div class="equipo-fields-grid">
+                <div class="grid grid-cols-2 gap-3 mb-3">
                     <div class="field-group">
-                        <label>Cantidad</label>
-                        <input type="number" name="equipos[${idx}][cantidad]" value="1" min="1" required>
-                    </div>
-                    <div class="field-group">
-                        <label>N° Serial / MAC</label>
-                        <input type="text" name="equipos[${idx}][serial]" placeholder="Opcional">
+                        <label>Tipo de Equipo</label>
+                        <select name="equipos[${idx}][categoria]" required>
+                            <option value="Router">Router</option>
+                            <option value="ONU">ONU</option>
+                            <option value="Roseta">Roseta</option>
+                            <option value="Otro">Otro</option>
+                        </select>
                     </div>
                     <div class="field-group">
                         <label>Estado</label>
@@ -878,6 +820,25 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="field-group">
+                        <label>Marca</label>
+                        <input type="text" name="equipos[${idx}][marca]" placeholder="Ej: TP-Link" required>
+                    </div>
+                    <div class="field-group">
+                        <label>Modelo</label>
+                        <input type="text" name="equipos[${idx}][modelo]" placeholder="Ej: Archer C6" required>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>N° Serial / MAC</label>
+                    <input type="text" name="equipos[${idx}][serial]" placeholder="Opcional">
+                </div>
+
+                <input type="hidden" name="equipos[${idx}][cantidad]" value="1">
+                <input type="hidden" name="equipos[${idx}][precio_unitario]" value="0">
             </div>
         `;
             return card;
@@ -887,7 +848,6 @@
             addBtn.addEventListener('click', function () {
                 const card = buildEquipoCard(equipoIdx);
                 equiposList.appendChild(card);
-                card.querySelector('.equipo-catalog-select')?.focus();
                 equipoIdx++;
                 updateProgress();
             });
@@ -913,11 +873,59 @@
         }
 
         // ------------------------------------------------
+        // FIRMA PAD
+        // ------------------------------------------------
+        if (typeof SignaturePad === 'undefined') {
+            alert('Error: La librería de firma no se cargó. Verifica tu conexión a internet.');
+        }
+
+        const canvas = document.getElementById('signature-pad');
+        const signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            penColor: 'rgb(0, 0, 0)'
+        });
+
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth * ratio;
+            canvas.height = 200 * ratio; // Altura fija
+            canvas.getContext("2d").scale(ratio, ratio);
+            signaturePad.clear();
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        // Intentar redimensionar varias veces por si el layout tarda en renderizar
+        resizeCanvas();
+        setTimeout(resizeCanvas, 500);
+        setTimeout(resizeCanvas, 1000);
+
+        document.getElementById('clear-signature').addEventListener('click', () => {
+            signaturePad.clear();
+            document.getElementById('firma_cliente_input').value = '';
+            updateProgress();
+        });
+
+        signaturePad.onEnd = function() {
+            if (!signaturePad.isEmpty()) {
+                document.getElementById('firma_cliente_input').value = signaturePad.toDataURL();
+            } else {
+                document.getElementById('firma_cliente_input').value = '';
+            }
+            updateProgress();
+        };
+
+        // ------------------------------------------------
         // BARRA DE PROGRESO
         // ------------------------------------------------
         function isSectionDone(sectionId) {
             const body = document.getElementById('body-' + sectionId);
             if (!body) return false;
+            
+            if (sectionId === 'firma') {
+                return !signaturePad.isEmpty();
+            }
+
             const required = body.querySelectorAll('[required]');
             if (!required.length) return false;
             let filled = 0;
@@ -927,7 +935,8 @@
 
         function updateProgress() {
             let done = 0;
-            ['equipos', 'modalidad'].forEach(sid => {
+            const sections = ['equipos', 'modalidad', 'instalacion', 'firma'];
+            sections.forEach(sid => {
                 const status = document.getElementById('status-' + sid);
                 if (!status) return;
                 const isActive = status.closest('.section-header').classList.contains('active');
@@ -943,17 +952,32 @@
                     status.className = 'section-status pending';
                 }
             });
-            const pct = Math.round((done / 2) * 100);
+            const pct = Math.round((done / sections.length) * 100);
             const fill = document.getElementById('progress-fill');
             const label = document.getElementById('progress-label');
             if (fill) fill.style.width = pct + '%';
-            if (label) label.textContent = done + ' / 2 secciones';
+            if (label) label.textContent = done + ' / ' + sections.length + ' secciones';
         }
 
         document.getElementById('anexo2-form')?.addEventListener('input', updateProgress);
         document.getElementById('anexo2-form')?.addEventListener('change', updateProgress);
         document.querySelectorAll('.section-header').forEach(h => {
             h.addEventListener('click', () => setTimeout(updateProgress, 50));
+        });
+
+        document.getElementById('anexo2-form')?.addEventListener('submit', function(e) {
+            // Asegurar que la firma se capture antes de enviar
+            if (signaturePad.isEmpty()) {
+                alert('Por favor, pida al cliente que firme el contrato antes de finalizar.');
+                e.preventDefault();
+                return;
+            }
+
+            document.getElementById('firma_cliente_input').value = signaturePad.toDataURL();
+
+            const btn = document.querySelector('.btn-submit');
+            btn.innerHTML = '<span class="animate-spin inline-block mr-2">↻</span> Enviando...';
+            console.log('Enviando formulario...');
         });
 
         updateProgress();
