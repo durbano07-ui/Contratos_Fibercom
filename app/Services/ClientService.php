@@ -32,7 +32,7 @@ class ClientService
                 'ciudad' => $data['ciudad'] ?? null,
                 'canton' => $data['canton'] ?? null,
                 'provincia' => $data['provincia'] ?? null,
-                'n_telefono' => $data['n_telefono'] ?? null,
+                'n_telefono' => $data['n_telefono'] ?? $data['telefono'] ?? null,
             ]
         );
     }

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,         // Crea los 3 usuarios (Admin, Operador, Técnico)
             InternetTypeSeeder::class,  // Tipos de conexión (Fibra, Inalámbrico, etc)
             InternetPlanSeeder::class,  // Catálogo de planes
+            EquipmentSeeder::class,     // Inventario inicial de equipos
         ]);
     }
 }

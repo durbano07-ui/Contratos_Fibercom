@@ -7,32 +7,22 @@
     <title>Contrato de Adhesión - SIGNAL INTERNET / FIBERCOM ECUADOR</title>
     <style>
         @page {
-            margin: 140px 2cm 80px 2cm;
+            margin: 95px 1.5cm 50px 1.5cm;
         }
 
         body {
             font-family: 'Calibri', 'Helvetica', 'Arial', sans-serif;
-            font-size: 10pt;
-            line-height: 1.4;
+            font-size: 9pt;
+            line-height: 1.25;
             color: #000;
         }
 
         header {
             position: fixed;
-            top: -100px;
+            top: -75px;
             left: 0px;
             right: 0px;
-            height: 80px;
-        }
-
-        footer {
-            position: fixed;
-            bottom: -50px;
-            left: 0px;
-            right: 0px;
-            height: 50px;
-            font-size: 9pt;
-            text-align: center;
+            height: 65px;
         }
 
         .header-table {
@@ -47,15 +37,6 @@
             border: none;
             padding: 0;
             vertical-align: middle;
-        }
-
-        .footer-content {
-            border-top: 1px solid #000;
-            padding-top: 5px;
-            font-family: 'Calibri', 'Helvetica', 'Arial', sans-serif;
-            font-size: 9pt;
-            color: #555;
-            line-height: 1.2;
         }
 
         h1,
@@ -108,8 +89,11 @@
             border: none;
         }
 
-        .table-fillable td {
-            height: 28px;
+        .table-fillable td,
+        .table-fillable th {
+            padding: 2px 5px;
+            font-size: 8.5pt;
+            height: 18px;
         }
 
         .input-line {
@@ -163,19 +147,34 @@
 
 <body>
 
+    @php
+        $providerSigImg = null;
+        $possibleSigPaths = [
+            storage_path('app/public/firma_prestador.png'),
+            storage_path('app/public/firma_prestador.jpg'),
+            storage_path('app/public/firma_prestador.jpeg'),
+            public_path('img/firma_prestador.png'),
+            public_path('img/firma_prestador.jpg'),
+            public_path('img/firma_prestador.jpeg'),
+        ];
+        foreach ($possibleSigPaths as $path) {
+            if (file_exists($path)) {
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                $mime = in_array(strtolower($ext), ['jpg', 'jpeg']) ? 'image/jpeg' : 'image/png';
+                $providerSigImg = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path));
+                break;
+            }
+        }
+    @endphp
+
     <header>
         <table class="header-table">
             <tr>
-                <td style="width: 33%;">
+                <td style="width: 50%;">
                     <img src="{{ public_path('img/logo_fibercom.png') }}" alt="Fibercom Logo"
                         style="max-height: 55px; width: auto;">
                 </td>
-                <td
-                    style="width: 34%; text-align: center; font-size: 10px; font-family: 'Calibri', 'Helvetica', 'Arial', sans-serif; font-weight: bold; color: #444;">
-                    RESOLUCIÓN ARCOTEL 2018-0019<br>
-                    RUC: 0201657897001
-                </td>
-                <td style="width: 33%; text-align: right;">
+                <td style="width: 50%; text-align: right;">
                     <img src="{{ public_path('img/logo_signal.png') }}" alt="Internet Signal Logo"
                         style="max-height: 60px; width: auto;">
                 </td>
@@ -183,20 +182,10 @@
         </table>
     </header>
 
-    <footer>
-        <div class="footer-content">
-            <strong>Dirección:</strong> km 1.8 Vía las Cochas y Pasaje Urbano - Guaranda<br>
-            <strong>Telfs:</strong> 033 033680 / 0997852792 / 0990303604<br>
-            <strong>Email:</strong> <a href="mailto:ventas@fibercom.ec"
-                style="color:blue; text-decoration:underline;">ventas@fibercom.ec</a> &nbsp;&nbsp;&nbsp;&nbsp; <a
-                href="http://www.fibercom.ec" style="color:blue; text-decoration:underline;">www.fibercom.ec</a>
-        </div>
-    </footer>
-
     <main>
 
         {{-- CONTRATO PRINCIPAL --}}
-        <h1>CONTRATO DE ADHESION</h1>
+        <h1 style="text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 12px; margin-top: 0;">CONTRATO DE ADHESIÓN</h1>
 
         @php
             $signatureImg = ($contract->anexo2 && $contract->anexo2->firma_cliente)
@@ -205,92 +194,158 @@
         @endphp
 
         {{-- CLAUSULA PRIMERA --}}
-        <div class="clause-title">CLAUSULA PRIMERA. Lugar y fecha. - Guaranda,
-            {{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('d \d\e F \d\e Y') }}
+        <div style="font-weight: bold; font-size: 10.5pt; margin-bottom: 8px;">
+            CLAUSULA PRIMERA. - Lugar y fecha. - Datos de los Comparecientes:
         </div>
-        <p><strong>Datos de los Comparecientes:</strong></p>
-        <p><strong>Datos del prestador</strong><br>
-            Nombre/Razón Social: <strong>LUCIA DEL SOCORRO URBANO URBANO</strong><br>
-            Nombre comercial: <strong>SIGNAL INTERNET, FIBERCOM ECUADOR</strong><br>
-            Dirección: <strong>Calle Azuay 820 y Salinas -- Guaranda (sector Plaza Roja)</strong><br>
-            Provincia: <strong>BOLIVAR</strong> Ciudad: <strong>GUARANDA</strong> Cantón: <strong>GUARANDA</strong><br>
-            Parroquia: <strong>GUARANDA</strong> No. Teléfono: <strong>099 0303604</strong><br>
-            RUC: <strong>0201657897001</strong> Correo Electrónico: <strong>ventas@fibercom.ec</strong><br>
-            Web: <a href="http://www.signal-internet-ec.com"><strong>www.signal-internet-ec.com</strong></a>, <a
-                href="https://fibercom.ec"><strong>https://fibercom.ec</strong></a></p>
 
-        <p><strong>Datos del abonado/suscriptor</strong><br>
-            Nombres/Razón social: <strong>{{ mb_strtoupper($contract->client->nombre) }}
-                {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>
-            Cédula/RUC: <strong>{{ $contract->client->cedula }}</strong> Email:
-            <strong>{{ strtolower($contract->client->email ?? 'N/A') }}</strong><br>
-            Dirección: (Av. Principal No. De casa o lote y calle secundaria)
-            <strong>{{ mb_strtoupper($contract->client->direccion ?? 'N/A') }}</strong><br>
-            Provincia: <strong>{{ mb_strtoupper($contract->client->provincia ?? 'BOLIVAR') }}</strong> Ciudad:
-            <strong>{{ mb_strtoupper($contract->client->ciudad ?? 'GUARANDA') }}</strong> Cantón:
-            <strong>{{ mb_strtoupper($contract->client->canton ?? 'GUARANDA') }}</strong> Parroquia:
-            <strong>{{ mb_strtoupper($contract->client->parroquia ?? 'GUARANDA') }}</strong><br>
-            Dirección donde será prestado el servicio:
-            <strong>{{ mb_strtoupper($contract->direccion_servicio ?? $contract->direccion_instalacion ?? $contract->client->direccion) }}</strong><br>
-            Número telefónico de referencia fijo/móvil:
-            <strong>{{ $contract->client->n_telefono ?? $contract->client->telefono }}</strong><br>
-            ¿El abonado es de la tercera edad o discapacitado? Sí <span
-                class="checkbox-symbol">{{ $contract->beneficio_ley ? 'X' : '_' }}</span> No <span
-                class="checkbox-symbol">{{ !$contract->beneficio_ley ? 'X' : '_' }}</span><br>
-            Si el abonado es de la tercera edad o discapacitado, aplica para el descuento del 50% del plan residencial
-            escogido.
-        </p>
+        <div style="margin-bottom: 10px; font-size: 10pt;">
+            <strong>Fecha:</strong>
+            <span style="border: 1px solid #000; padding: 2px 12px; display: inline-block; font-size: 10pt;">
+                {{ \Carbon\Carbon::parse($contract->fecha)->format('d/m/Y') }}
+            </span>
+        </div>
+
+        <div style="font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;">Datos del prestador</div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 9.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; width: 25%;">Nombre/Razón Social:</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold;" colspan="3">LUCIA DEL SOCORRO URBANO URBANO.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold;">Nombre comercial:</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold;" colspan="3">SIGNAL INTERNET, FIBERCOM ECUADOR</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold;">Dirección:</td>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="3">Calle Azuay 820 y Salinas – Guaranda (sector Plaza Roja)</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="4">
+                    <strong>Provincia: BOLIVAR</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Ciudad: GUARANDA</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Cantón: GUARANDA</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="2">
+                    <strong>Parroquia:</strong> {{ mb_strtoupper($contract->client->parroquia ?? 'GUARANDA') }}
+                </td>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="2">
+                    <strong>No. Teléfono:</strong> 0990303604
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="2">
+                    <strong>RUC:</strong> 0201657897001
+                </td>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="2">
+                    <strong>Correo Electrónico:</strong> ventas@fibercom.ec
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="4">
+                    <strong>Web:</strong> <a href="http://www.signal-internet-ec.com" style="color:blue; text-decoration:underline;">www.signal-internet-ec.com</a> , <a href="https://fibercom.ec" style="color:blue; text-decoration:underline;">https://fibercom.ec</a>
+                </td>
+            </tr>
+        </table>
+
+        <div style="font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;">Datos del abonado/suscriptor</div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 9.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="4">
+                    <strong>Nombres/Razón social:</strong> {{ mb_strtoupper($contract->client->nombre) }} {{ mb_strtoupper($contract->client->apellido ?? '') }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="2">
+                    <strong>Cédula/RUC:</strong> {{ $contract->client->cedula }}
+                </td>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="2">
+                    <strong>Email:</strong> {{ strtolower($contract->client->email ?? '') }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="4">
+                    <strong>Dirección:</strong> {{ $contract->client->direccion }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="4">
+                    <strong>Provincia:</strong> {{ $contract->client->provincia ?? 'Bolívar' }} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Ciudad:</strong> {{ $contract->client->ciudad ?? 'Guaranda' }} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Cantón:</strong> {{ $contract->client->canton ?? 'Guaranda' }} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Parroquia:</strong> {{ mb_strtoupper($contract->client->parroquia ?? 'GUARANDA') }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="4">
+                    <strong>Dirección donde será prestado el servicio:</strong> {{ $contract->direccion_servicio ?? $contract->client->direccion }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 3px 6px;" colspan="4">
+                    <strong>Número telefónico de referencia fijo/móvil:</strong> {{ $contract->client->n_telefono ?? $contract->client->telefono }}
+                </td>
+            </tr>
+        </table>
+
+        <div style="font-size: 9pt; margin-bottom: 10px; line-height: 1.3;">
+            ¿El abonado es de la tercera edad o discapacitado? &nbsp;&nbsp;&nbsp;&nbsp; Si.......{{ $contract->beneficio_ley ? 'x' : '' }} &nbsp;&nbsp;&nbsp;&nbsp; No.......{{ !$contract->beneficio_ley ? 'x' : '' }}.<br>
+            (En caso afirmativo, aplica tarifa preferencial de acuerdo al plan del prestador).
+        </div>
 
         {{-- CLAUSULA SEGUNDA --}}
-        <div class="clause-title">CLAUSULA SEGUNDA. - Objeto:</div>
-        <p>El prestador del servicio se compromete a proporcionar al abonado/suscriptor el/los siguiente (s) servicio
-            (s), para lo cual el prestador dispone de los correspondientes títulos habilitantes otorgados por la
-            ARCOTEL, de conformidad con el ordenamiento jurídico vigente:</p>
+        <p style="font-size: 9pt; margin-bottom: 3px; line-height: 1.25;">
+            <strong>CLAUSULA SEGUNDA. - Objeto:</strong> El prestador del servicio se compromete a proporcionar al abonado/suscriptor el/los siguiente (s) servicio (s), para lo cual el prestador dispone de los correspondientes títulos habilitantes otorgados por la ARCOTEL, de conformidad con el ordenamiento jurídico vigente:
+        </p>
+
         @php
             $services = [
-                'Móvil Avanzado (SMA)' => '',
-                'Móvil Avanzado a través de Operador Móvil Virtual (OMV)' => '',
-                'Telefonía Fija' => '',
-                'Telecomunicaciones por Satélite' => '',
-                'Valor Agregado' => '',
-                'Acceso a internet' => 'X',
-                'Troncalizados' => '',
-                'Comunales' => '',
-                'Audio y video por suscripción' => '',
-                'Portador' => ''
+                '- Móvil Avanzado (SMA)' => '',
+                '- Móvil Avanzado a través de Operador Móvil Virtual (OMV)' => '',
+                '- Telefonía Fija' => '',
+                '- Telecomunicaciones por Satélite' => '',
+                '- Valor Agregado' => '',
+                '- Acceso a internet' => 'X',
+                '- Troncalizados' => '',
+                '- Comunales' => '',
+                '- Audio y video por suscripción' => '',
+                '- Portador' => ''
             ];
         @endphp
-        <table class="table-compact">
+        <table style="width: 55%; border-collapse: collapse; margin-top: 2px; margin-bottom: 3px; font-size: 7.5pt; line-height: 1.0;">
             @foreach($services as $service => $mark)
                 <tr>
-                    <td style="width: 85%;">{{ $service }}</td>
-                    <td style="width: 15%; text-align: center;">{{ $mark }}</td>
+                    <td style="border: 1px solid #000; padding: 0px 3px; width: 85%;">{{ $service }}</td>
+                    <td style="border: 1px solid #000; padding: 0px 3px; width: 15%; text-align: center; font-weight: bold;">{{ $mark }}</td>
                 </tr>
             @endforeach
         </table>
-        <p>Las Condiciones del/los servicio(s) que el abonado va a contratar se encuentran detalladas en el Anexo No.
-            1f, el cual forma parte integrante del presente contrato.</p>
+
+        <p style="font-size: 8.5pt; margin-bottom: 5px; line-height: 1.2;">
+            Las Condiciones del/los servicio(s) que el abonado va a contratar se encuentran detalladas en el Anexo No. 1, el cual forma parte integrante del presente contrato.
+        </p>
 
         {{-- CLAUSULA TERCERA --}}
-        <div class="clause-title">CLAUSULA TERCERA. - Vigencia del Contrato:</div>
-        <p>El presente contrato tendrá una duración de 24 meses y entrará en vigencia, a partir de la fecha de
-            instalación y prestación efectiva del servicio, La fecha inicial considerada para facturación para cada uno
-            de los servicios contratados debe ser la de la activación del servicio.</p>
-        <p>El prestador del servicio, previo a la firma o aceptación del contrato, deberá verificar la identidad del
-            abonado, cliente, usuario o suscriptor. El prestador debe de indicar los mecanismos de identificación
-            disponibles para que el abonado elija, siguiendo la Ley Orgánica de Protección de Datos Personales y la Ley
-            Orgánica del Sistema Nacional de Registro de Datos Públicos y sus respectivos reglamentos.</p>
-        <p>Las partes se comprometen a respetar el plazo de vigencia pactado, sin perjuicio de que el abonado/suscriptor
+        <p style="font-size: 9pt; margin-bottom: 4px; line-height: 1.25;">
+            <strong>CLAUSULA TERCERA. - Vigencia del Contrato:</strong> El presente contrato tendrá una duración de {{ $contract->duracion ?? '24' }} meses y entrará en vigencia, a partir de la fecha de instalación y prestación efectiva del servicio, La fecha inicial considerada para facturación para cada uno de los servicios contratados debe ser la de la activación del servicio.
+        </p>
+        <p style="font-size: 9pt; margin-bottom: 4px; line-height: 1.25;">
+            El prestador del servicio, previo a la firma o aceptación del contrato, deberá verificar la identidad del abonado, cliente, usuario o suscriptor. El prestador debe de indicar los mecanismos de identificación disponibles para que el abonado elija, siguiendo la Ley Orgánica de Protección de Datos Personales y la Ley Orgánica del Sistema Nacional de Registro de Datos Públicos y sus respectivos reglamentos.
+        </p>
+
+        <div style="page-break-after: always;"></div>
+        <p style="margin-bottom: 8px; line-height: 1.25;">Las partes se comprometen a respetar el plazo de vigencia pactado, sin perjuicio de que el abonado/suscriptor
             pueda darlo por terminado unilateralmente, en cualquier tiempo, previa notificación física o electrónica,
             con por lo menos quince (15) días de anticipación, conforme lo dispuesto en las Leyes Orgánicas de
             Telecomunicaciones y de Defensa del Consumidor y sin que para ello esté obligado a cancelar multas o
             recargos de valores de ninguna naturaleza.</p>
-        <p>El abonado acepta la renovación automática sucesiva del contrato en las mismas condiciones de este contrato,
+        <p style="margin-bottom: 4px; line-height: 1.25;">El abonado acepta la renovación automática sucesiva del contrato en las mismas condiciones de este contrato,
             independientemente de su derecho a terminar la relación contractual conforme la legislación aplicable, o
             solicitar en cualquier tiempo, con hasta quince (15) días de antelación a la fecha de renovación, su
-            decisión de no renovación:<br>
-            Si <span class="checkbox-symbol">X</span> No <span class="checkbox-symbol">_</span></p>
-        <p>Todas las promociones, servicios adicionales y suplementarios que ofrezca el prestador con carácter gratuito,
+            decisión de no renovación:</p>
+        <div style="margin-bottom: 8px; margin-top: 2px;">
+            Si...... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: {{ ($contract->renovacion_automatica ?? true) ? '#a8d08d' : '#ffffff' }}; vertical-align: middle; margin-right: 40px;"></span>
+            No...... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: {{ !($contract->renovacion_automatica ?? true) ? '#a8d08d' : '#ffffff' }}; vertical-align: middle;"></span>
+        </div>
+        <p style="margin-bottom: 10px; line-height: 1.25;">Todas las promociones, servicios adicionales y suplementarios que ofrezca el prestador con carácter gratuito,
             no requerirán autorización y aceptación; la prestación de dichos servicios no debe generar al abonado,
             suscriptor o cliente, obligaciones de retribución de ninguna clase o de permanencia mínima. El abonado,
             suscriptor o cliente podrá solicitar al prestador el cese de dichos servicios, lo cual deberá ser realizado
@@ -299,674 +354,1075 @@
             asociados a dicho cese.</p>
 
         {{-- CLAUSULA CUARTA --}}
-        <div class="clause-title">CLAUSULA CUARTA. - Suspensión del Servicio. -</div>
-        <p>Los servicios contratados podrán ser suspendidos debido a las siguientes causas: a) Por falta de pago del
+        <p style="margin-bottom: 10px; line-height: 1.25;">
+            <strong>CLAUSULA CUARTA. - Suspensión del Servicio. -</strong> Los servicios contratados podrán ser suspendidos debido a las siguientes causas: a) Por falta de pago del
             abonado; b) Caso fortuito o fuerza mayor que obliguen a la suspensión del servicio, calificada por la
             ARCOTEL, en este caso sólo se podrá cobrar por los servicios efectivamente prestados; c) Por uso indebido de
             los servicios contratados o uso ilegal de los mismos; d) Por mandato judicial; y e) Por otras causas
-            previstas en el ordenamiento vigente.</p>
-        <p>La falta de pago a la que se refiere la letra a), aplicará al día siguiente de cumplida la fecha máxima de
-            pago, la cual estará detallada en la factura emitida, no se considerarán valores impagos los valores que se
-            encuentren bajo un proceso de reclamación ante el prestador. Durante la suspensión de los servicios
-            contratados, se cobrarán únicamente los servicios efectivamente prestados y aquellos que se justifiquen y no
-            atente contra la Ley Orgánica de Defensa del Consumidor y Títulos habilitantes para la prestación del
-            servicio.</p>
+            previstas en el ordenamiento vigente.
+        </p>
 
         {{-- CLAUSULA QUINTA --}}
-        <div class="clause-title">CLAUSULA QUINTA. - Terminación del contrato. -</div>
-        <p>Los contratos podrán darse por terminado por cualquiera de las siguientes causas: <strong>Por el prestador
+        <p style="margin-bottom: 6px; line-height: 1.25;">
+            <strong>CLAUSULA QUINTA. - Terminación del contrato. -</strong> Los contratos podrán darse por terminado por cualquiera de las siguientes causas: <strong>Por el prestador
                 del Servicio:</strong> a) Incumplimiento de las condiciones contractuales del abonado, o la consignación
             de datos erróneos o falsos, b) Si el abonado o cliente utiliza los servicios contratados para fines
             distintos a los convenidos o si los utiliza en prácticas contrarias a la ley, c) Por vencimiento del plazo
             de vigencia del contrato, cuando no exista renovación, d) Por falta de pago, e) Por las demás causas
-            previstas en el Ordenamiento Jurídico Vigente.</p>
-        <p><strong>Por abonado o cliente</strong>: a) Por decisión unilateral del abonado, suscriptor o cliente de dar
+            previstas en el Ordenamiento Jurídico Vigente.
+        </p>
+        <p style="margin-bottom: 6px; line-height: 1.25;"><strong>Por abonado o cliente</strong>: a) Por decisión unilateral del abonado, suscriptor o cliente de dar
             por terminado el contrato. b) Por vencimiento del plazo de vigencia del contrato, cuando no exista
             renovación pactada. c) Por incumplimiento de las condiciones contractuales pactadas. d) Por las demás causas
             previstas en el Ordenamiento Jurídico Vigente.</p>
-        <p>El no cancelar los saldos que estuvieron pendientes al momento de la presentación de la solicitud de
+        <p style="margin-bottom: 6px; line-height: 1.25;">El no cancelar los saldos que estuvieron pendientes al momento de la presentación de la solicitud de
             terminación no podrá ser considerado como un impedimento para procesar y cancelar el contrato. Esto no
             significa que el prestador haya renunciado al cobro de dichos valores ya que los podrá cobrar en la forma y
-            plazos establecidos en el ordenamiento jurídico a través de los medios legales correspondientes.</p>
-        <p>Los abonados, clientes o suscriptores podrán ejercer su derecho de devolución o cambio del servicio dentro
+            plazos establecidos en el ordenamiento jurídico a través de los medios legales correspondientes</p>
+        <p style="margin-bottom: 6px; line-height: 1.25;">Los abonados, clientes o suscriptores podrán ejercer su derecho de devolución o cambio del servicio dentro
             del término de quince (15) días posteriores a la activación del servicio, sin la necesidad de presentar
             requisitos adicionales, conforme al ordenamiento jurídico vigente. La devolución del servicio implicará la
             cesación inmediata del contrato de provisión del mismo. El cambio de servicio se efectuará a través de la
             modificación total o parcial de las condiciones de prestación previamente pactadas.</p>
-        <p>El prestador del servicio no podrá cobrar ningún valor por instalación cuando la solicitud de devolución se
+        <p style="margin-bottom: 10px; line-height: 1.25;">El prestador del servicio no podrá cobrar ningún valor por instalación cuando la solicitud de devolución se
             deba a problemas técnicos o el incumplimiento de una o varias de las condiciones contractuales por parte del
             prestador, comprobados por este en el término de hasta cinco (5) días después de presentada la solicitud. En
             tales casos, los abonados, suscriptores o clientes deberán detallar expresamente los problemas técnicos o
             incumplimientos aducidos, ya sea por medio físico, electrónico o telefónico.</p>
 
         {{-- CLAUSULA SEXTA --}}
-        <div class="clause-title">CLAUSULA SEXTA. - Permanencia mínima:</div>
-        <p>¿El abonado se acoge al período de permanencia mínima de 24 meses en la prestación del servicio
-            contratado?<br>
-            Si <span class="checkbox-symbol">X</span> No <span class="checkbox-symbol">_</span></p>
-        <p>Los beneficios de la permanencia mínima son:<br>
+        <p style="margin-bottom: 4px; line-height: 1.25;">
+            <strong>CLAUSULA SEXTA. - Permanencia mínima:</strong>
+        </p>
+        <p style="margin-bottom: 4px; line-height: 1.25;">
+            ¿El abonado se acoge al período de permanencia mínima de 24 meses en la prestación del servicio contratado?
+        </p>
+        <div style="margin-bottom: 8px; margin-top: 2px;">
+            Si...... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: {{ ($contract->permanencia_minima ?? true) ? '#a8d08d' : '#ffffff' }}; vertical-align: middle; margin-right: 40px;"></span>
+            No...... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: {{ !($contract->permanencia_minima ?? true) ? '#a8d08d' : '#ffffff' }}; vertical-align: middle;"></span>
+        </div>
+        <p style="margin-bottom: 0px; line-height: 1.25;">
+            Los beneficios de la permanencia mínima son:
+        </p>
+
+        <div style="page-break-after: always;"></div>
+        <p style="margin-top: 0px; margin-bottom: 8px; line-height: 1.25;">
             <strong>No pago por el costo de instalación del servicio si cumple el tiempo, caso contrario cancelara un
                 proporcional del costo de instalación.</strong>
         </p>
-        <p>La permanencia mínima se acuerda, sin perjuicio de que el abonado/suscriptor conforme lo determina la Ley
+        <p style="margin-bottom: 10px; line-height: 1.25;">La permanencia mínima se acuerda, sin perjuicio de que el abonado/suscriptor conforme lo determina la Ley
             Orgánica de Telecomunicaciones, puede dar por terminado el contrato en forma unilateral y anticipada, y en
             cualquier tiempo previa notificación por medios físicos, telefónicos o electrónicos al prestador, con por lo
             menos quince (15) días calendario de anticipación, El contrato terminará quince (15) días calendario
             posteriores a la fecha de presentación de la solicitud.</p>
 
         {{-- CLAUSULA SEPTIMA --}}
-        <div class="clause-title">CLAUSULA SEPTIMA. - Tarifa y forma de pago;</div>
-        <p>Las tarifas o valores mensuales a ser cancelados por cada uno de los servicios contratados por el abonado
-            estará determinada en la ficha de cada servicio, que constan en el Anexo 1f.... y el pago se realizará, de
-            la siguiente forma:</p>
-        <table class="table-compact">
+        <p style="margin-bottom: 8px; line-height: 1.25;">
+            <strong>CLAUSULA SEPTIMA. - Tarifa y forma de pago;</strong> Las tarifas o valores mensuales a ser cancelados por cada uno de los servicios contratados por el abonado estará determinada en la ficha de cada servicio, que constan en el Anexo 1f.... y el pago se realizará, de la siguiente forma:
+        </p>
+        <table style="width: 75%; border-collapse: collapse; margin-top: 4px; margin-bottom: 8px; font-size: 8.5pt;">
             <tr>
-                <th>Forma de pago</th>
-                <th style="width:15%">SI</th>
-                <th style="width:15%">NO</th>
+                <th style="border: 1px solid #000; padding: 3px 6px;"></th>
+                <th style="border: 1px solid #000; padding: 3px 6px; width: 14%; text-align: center;">SI</th>
+                <th style="border: 1px solid #000; padding: 3px 6px; width: 14%; text-align: center;">NO</th>
             </tr>
             <tr>
-                <td>- Pago directo en cajas del prestador del servicio</td>
-                <td class="text-center">
+                <td style="border: 1px solid #000; padding: 3px 6px;">- Pago directo en cajas del prestador del servicio</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;">
                     {{ ($contract->payment == 'direct' || $contract->metodo_pago == 'direct') ? 'X' : '' }}
                 </td>
-                <td></td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;"></td>
             </tr>
             <tr>
-                <td>- Débito automático cuenta de ahorro o corriente</td>
-                <td class="text-center">
+                <td style="border: 1px solid #000; padding: 3px 6px;">- Débito automático cuenta de ahorro o corriente</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;">
                     {{ ($contract->payment == 'auto' || $contract->metodo_pago == 'auto') ? 'X' : '' }}
                 </td>
-                <td></td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;"></td>
             </tr>
             <tr>
-                <td>- Pago en ventanilla de locales autorizados</td>
-                <td class="text-center">
+                <td style="border: 1px solid #000; padding: 3px 6px;">- Pago en ventanilla de locales autorizados</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;">
                     {{ ($contract->payment == 'window' || $contract->metodo_pago == 'window') ? 'X' : '' }}
                 </td>
-                <td></td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;"></td>
             </tr>
             <tr>
-                <td>- Débito con tarjeta de crédito</td>
-                <td class="text-center">
+                <td style="border: 1px solid #000; padding: 3px 6px;">- Débito con tarjeta de crédito</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;">
                     {{ ($contract->payment == 'card' || $contract->metodo_pago == 'card') ? 'X' : '' }}
                 </td>
-                <td></td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;"></td>
             </tr>
             <tr>
-                <td>- Transferencia vía medios electrónicos</td>
-                <td class="text-center">
+                <td style="border: 1px solid #000; padding: 3px 6px;">- Transferencia via medios electrónicos</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;">
                     {{ ($contract->payment == 'transfer' || $contract->metodo_pago == 'transfer') ? 'X' : '' }}
                 </td>
-                <td></td>
+                <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;"></td>
             </tr>
         </table>
-        <p>La tarifa correspondiente al servicio contratado y efectivamente prestado estará dentro de los techos
-            tarifarios señalados por la ARCOTEL y en los títulos habilitantes correspondientes, en caso de que se
-            establezcan, de conformidad con el ordenamiento jurídico vigente.</p>
-        <p>En caso de que el abonado o suscriptor desee cambiar su modalidad de pago a otra de las disponibles, deberá
-            comunicar al prestador del servicio con quince (15) días de anticipación. El prestador del servicio, luego
-            de haber sido comunicado, instrumentará la nueva forma de pago.</p>
+        <p style="margin-bottom: 8px; line-height: 1.25;">La tarifa correspondiente al servicio contratado y efectivamente prestado, estará dentro de los techos tarifarios señalados por la ARCOTEL y en los títulos habilitantes correspondientes, en caso de que se establezcan, de conformidad con el ordenamiento jurídico vigente.</p>
+        <p style="margin-bottom: 10px; line-height: 1.25;">En caso de que el abonado o suscriptor desee cambiar su modalidad de pago a otra de las disponibles, deberá comunicar al prestador del servicio con quince (15) dias de anticipación. El prestador del servicio, luego de haber sido comunicado, instrumentará la nueva forma de pago.</p>
 
         {{-- CLAUSULA OCTAVA --}}
-        <div class="clause-title">CLAUSULA OCTAVA.- Compra, Arrendamiento de Equipos:</div>
-        <p>(Cuando sea procedente el arrendamiento o adquisición de equipos, por parte del abonado, toda la información
-            pertinente será detallada en un <strong>Anexo adicional</strong>, suscrito por el abonado el cual contendrá
-            los temas relacionados a las condiciones de los equipos adquiridos/arrendados, entre otras características
-            se deberá incluir: cantidad, precio, marca, estado, y las condiciones de tal adquisición o arrendamiento,
-            particularmente el tiempo en el que se pagará el arrendamiento o la compra del equipo, el valor mensual a
-            cancelar o las condiciones de pago).</p>
+        <p style="margin-bottom: 10px; line-height: 1.25;">
+            <strong>CLAUSULA OCTAVA.- Compra, Arrendamiento de Equipos:</strong> (Cuando sea procedente el arrendamiento o adquisición de equipos, por parte del abonado, toda la información pertinente será detallada en un <strong>Anexo adicional</strong>, suscrito por el abonado el cual contendrá los temas relacionados a las condiciones de los equipos adquiridos/arrendados, entre otras características se deberá incluir: cantidad, precio, marca, estado, y las condiciones de tal adquisición o arrendamiento, particularmente el tiempo en el que se pagará el arrendamiento o la compra del equipo, el valor mensual a cancelar o las condiciones de pago).
+        </p>
 
         {{-- CLAUSULA NOVENA --}}
-        <div class="clause-title">CLAUSULA NOVENA.- Uso de información personal:</div>
-        <p>Los datos personales que los usuarios proporcionen a los prestadores de servicios del régimen general de
-            telecomunicaciones, no podrán ser usados para la promoción comercial de servicios o productos, inclusive de
-            la propia operadora; salvo autorización y consentimiento expreso del abonado/suscriptor, el que constará
-            como instrumento separado y distinto al presente contrato de prestación de servicios (contrato de adhesión)
-            a través de medios físicos o electrónicos. En dicho instrumento se deberá dejar constancia expresa de los
-            datos personales o información que están expresamente autorizadas; el plazo de la autorización y el objetivo
-            que esta utilización persigue, conforme lo dispuesto en el artículo 121 del Reglamento General a la Ley
-            Orgánica de Telecomunicaciones, Ley Orgánica de Protección de Datos Personales, su Reglamento General y las
-            directrices emitidas por la Autoridad de Protección de Datos.</p>
+        <p style="margin-bottom: 10px; line-height: 1.25;">
+            <strong>CLAUSULA NOVENA.- Uso de información personal:</strong> Los datos personales que los usuarios proporcionen a los prestadores de servicios del régimen general de telecomunicaciones, no podrán ser usados para la promoción comercial de servicios o productos, inclusive de la propia operadora; salvo autorización y consentimiento expreso del abonado/suscriptor, el que constará como instrumento separado y distinto al presente contrato de prestación de servicios (contrato de adhesión) a través de medios físicos o electrónicos. En dicho instrumento se deberá dejar constancia expresa de los datos personales o información que están expresamente autorizadas; el plazo de la autorización y el objetivo que esta utilización persigue, conforme lo dispuesto en el artículo 121 del Reglamento General a la Ley Orgánica de Telecomunicaciones, Ley Orgánica de Protección de Datos Personales, su Reglamento General y las directrices emitidas por la Autoridad de Protección de Datos.
+        </p>
 
         {{-- CLAUSULA DECIMA --}}
-        <div class="clause-title">CLAUSULA DECIMA. - Reclamos y soporte técnico:</div>
-        <p>El "ABONADO/SUSCRIPTOR" podrá requerir soporte técnico o presentar reclamos al prestador de servicios a
-            través de los siguientes medios o puntos:</p>
-        <p>- Medio electrónico: ventas@fibercom.ec, info@fibercom.ec<br>
-            - Oficinas de atención a usuarios:<br>
-            . Guaranda: Calle Azuay 820 y Salinas -- Guaranda (sector Plaza Roja)<br>
-            . San Miguel de Bolívar: Av. Circunvalación y Regulo de Mora (frente a la coop. transporte Atenas)<br>
-            . Guanujo: Km 1.8 Vía Las Cochas - Guaranda<br>
-            - Horarios de atención oficinas: lunes a viernes (de 8:00 a 17:00) y sábados de 9:00 am a 13:00<br>
-            - Teléfono: 033033680 -- 0990303604</p>
-        <p>En el caso en que su queja, reclamo o solicitud no hayan sido resueltos por el prestador del servicio, en
-            relación a la calidad del servicio prestado, a errores de facturación de los servicios, facturación de
-            servicios no contratados, cobros indebidos, o en general por cualquier irregularidad que se hubiere
-            producido en relación con el servicio contratado, los abonados, clientes o suscriptores podrán presentar las
-            mismas a través de cualquiera de los siguientes canales de atención:</p>
-        <p>Plataforma GOB.EC<br>
+        <p style="margin-bottom: 6px; line-height: 1.25;">
+            <strong>CLAUSULA DECIMA. - - Reclamos y soporte técnico:</strong> El "ABONADO/SUSCRIPTOR" podrá requerir soporte técnico o presentar reclamos al prestador de servicios a través de los siguientes medios o puntos:
+        </p>
+        <div style="margin-bottom: 10px; line-height: 1.35; padding-left: 0px;">
+            - Medio electrónico: (Correo: <strong>ventas@fibercom.ec</strong>)<br>
+            - Oficinas de atención a usuarios: Calle Azuay 820 y Salinas – Guaranda (sector Plaza Roja)<br>
+            - San Miguel de Bolívar: Av. Circunvalación y Regulo de Mora (frente a la Coop. transporte Atenas)<br>
+            - Guanujo: Km 1.8 Vía Las Cochas - Guaranda<br>
+            - Horarios de atención: <strong>Lunes a viernes (de 8:30 a 17:00) sábados (9:00 a 13:00)</strong><br>
+            - Teléfono: 033033680 / 0990303604
+        </div>
+
+        <p style="margin-bottom: 0px; line-height: 1.25;">
+            En el caso en que su queja, reclamo o solicitud no hayan sido resueltos por el prestador del servicio, en relación a la calidad del servicio prestado, a errores de facturación de los servicios, facturación de servicios no contratados, cobros indebidos, o en
+        </p>
+
+        <div style="page-break-after: always;"></div>
+        <p style="margin-top: 0px; margin-bottom: 6px; line-height: 1.2;">
+            general por cualquier irregularidad que se hubiere producido en relación con el servicio contratado, los abonados, clientes o suscriptores podrán presentar las mismas a través de cualquiera de los siguientes canales de atención:<br>
+            Plataforma GOB.EC<br><br>
             ARCOTEL<br>
             a) Atención Presencial (Oficinas de la ARCOTEL).<br>
             b) PBX-Directo Matriz, Coordinaciones Zonales y Oficinas Técnicas.<br>
             c) Call Center (llamadas gratuitas al número 1800-567567 o número que designe la ARCOTEL).<br>
             d) Correo Tradicional (oficios), o;<br>
-            e) Cualquier otro medio tecnológico o aplicativo que la ARCOTEL ponga a disposición</p>
+            e) Cualquier otro medio tecnológico o aplicativo que la ARCOTEL ponga a disposición
+        </p>
 
         {{-- CLAUSULA DECIMA PRIMERA --}}
-        <div class="clause-title">CLAUSULA DECIMA PRIMERA. - Normativa Aplicable:</div>
-        <p>En la prestación del servicio, se entienden incluidos todos los derechos y obligaciones de los
-            abonados/suscriptores, establecidos en las normas jurídicas aplicables, así como también los derechos y
-            obligaciones de los prestadores de servicios de telecomunicaciones y/o servicios de radiodifusión por
-            suscripción, dispuestos en el marco regulatorio.</p>
+        <p style="margin-bottom: 6px; line-height: 1.2;">
+            <strong>CLAUSULA DECIMA PRIMERA. - Normativa Aplicable:</strong> En la prestación del servicio, se entienden incluidos todos los derechos y obligaciones de los abonados/suscriptores, establecidos en las normas jurídicas aplicables, así como también los derechos y obligaciones de los prestadores de servicios de telecomunicaciones y/o servicios de radiodifusión por suscripción, dispuestos en el marco regulatorio.
+        </p>
 
         {{-- CLAUSULA DECIMA SEGUNDA --}}
-        <div class="clause-title">CLAUSULA DECIMA SEGUNDA. - Controversias:</div>
-        <p>Las diferencias que surjan de la ejecución del presente Contrato, podrán ser resueltas por mutuo acuerdo
-            entre las partes, sin perjuicio de que el abonado o suscriptor acuda con su reclamo, queja o denuncia, ante
-            las autoridades administrativas que correspondan. De no llegarse a una solución, cualquiera de las partes
-            podrá acudir ante los jueces competentes.</p>
-        <p>No obstante, lo indicado, las partes pueden pactar adicionalmente, someter sus controversias ante un centro
-            de mediación o arbitraje, si así lo deciden expresamente, en cuyo caso el abonado/suscriptor deberá
-            señalarlo en forma expresa.</p>
-        <p>El abonado, en caso de conflicto, acepta someterse a la mediación o arbitraje (puede significar costos en los
-            que debe incurrir el abonado/suscriptor - No aplica a Empresas Públicas prestadoras de servicios de
-            telecomunicaciones).<br>
-            SI__X___ NO______</p>
-        <p>Firma de aceptación-sujeción a arbitraje:</p>
-        <p style="margin-top: 10px;">
-            @if($signatureImg)
-                <img src="{{ $signatureImg }}" style="max-height: 50px; width: auto; margin-bottom: -15px;"><br>
-            @endif
-            _________________________
+        <p style="margin-bottom: 4px; line-height: 1.2;">
+            <strong>CLAUSULA DECIMA SEGUNDA. - Controversias:</strong> Las diferencias que surjan de la ejecución del presente Contrato, podrán ser resueltas por mutuo acuerdo entre las partes, sin perjuicio de que el abonado o suscriptor acuda con su reclamo, queja o denuncia, ante las autoridades administrativas que correspondan. De no llegarse a una solución, cualquiera de las partes podrá acudir ante los jueces competentes.
         </p>
+        <p style="margin-bottom: 4px; line-height: 1.2;">
+            No obstante, lo indicado, las partes pueden pactar adicionalmente, someter sus controversias ante un centro de mediación o arbitraje, si así lo deciden expresamente, en cuyo caso el abonado/suscriptor deberá señalarlo en forma expresa.
+        </p>
+        <p style="margin-bottom: 4px; line-height: 1.2;">
+            El abonado, en caso de conflicto, acepta someterse a la mediación o arbitraje (puede significar costos en los que debe incurrir el abonado/suscriptor - No aplica a Empresas Públicas prestadoras de servicios de telecomunicaciones).
+        </p>
+        <div style="margin-bottom: 4px; margin-top: 2px;">
+            SI...... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: #a8d08d; vertical-align: middle; margin-right: 30px;"></span>
+            NO..... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: #ffffff; vertical-align: middle;"></span>
+        </div>
+        <p style="margin-bottom: 2px; line-height: 1.2;">Firma de aceptación-sujeción a arbitraje:</p>
+        <div style="margin-top: 28px; margin-bottom: 6px;">
+            @if($signatureImg)
+                <img src="{{ $signatureImg }}" style="max-height: 35px; width: auto; margin-top: -30px; margin-bottom: 2px;"><br>
+            @endif
+            .........................................
+        </div>
 
         {{-- CLAUSULA DECIMA TERCERA --}}
-        <div class="clause-title">CLAUSULA DECIMA TERCERA. - Anexos:</div>
-        <p>Es parte integrante del presente contrato el Anexo 1f "SERVICIO DE ACCESO A INTERNET", Anexo 2 "ARRENDAMIENTO
-            O COMPRA DE EQUIPOS", Anexo 3 "ACTA DE INSTALACION Y ACTIVACION ", Anexo 4 "FORMA DE PAGO", así como los
-            demás anexos y documentos que se incorporen de conformidad con el ordenamiento jurídico.</p>
+        <p style="margin-bottom: 6px; line-height: 1.2;">
+            <strong>CLAUSULA DECIMA TERCERA.- Anexos:</strong> Es parte integrante del presente contrato el Anexo 1f “SERVICIO DE ACCESO A INTERNET”, Anexo 2 “ARRENDAMIENTO O COMPRA DE EQUIPOS” , Anexo 3 “ACTA DE INSTALACION Y ACTIVACION “, Anexo 4 “FORMA DE PAGO”, así como los demás anexos y documentos que se incorporen de conformidad con el ordenamiento jurídico.
+        </p>
 
         {{-- CLAUSULA DECIMA CUARTA --}}
-        <div class="clause-title">CLAUSULA DECIMA CUARTA. - Notificaciones y Domicilio:</div>
-        <p>Las notificaciones que corresponda, serán entregadas en el domicilio de cada una de las partes señalado en la
-            cláusula primera del presente contrato. Cualquier cambio de domicilio debe ser comunicado por escrito a la
-            otra parte en un plazo de 10 días, a partir del día siguiente en que el cambio se efectúe.</p>
+        <p style="margin-bottom: 6px; line-height: 1.2;">
+            <strong>CLAUSULA DECIMA CUARTA.- Notificaciones y Domicilio:</strong> Las notificaciones que corresponda, serán entregadas en el domicilio de cada una de las partes señalado en la cláusula primera del presente contrato. Cualquier cambio de domicilio debe ser comunicado por escrito a la otra parte en un plazo de 10 días, a partir del día siguiente en que el cambio se efectúe.
+        </p>
 
         {{-- CLAUSULA DECIMA QUINTA --}}
-        <div class="clause-title">CLAUSULA DECIMA QUINTA. - Empaquetamiento de servicios:</div>
-        <p class="input-line">La contratación incluye empaquetamiento de servicios: Si <span class="checkbox-symbol">_</span> No <span class="checkbox-symbol">X</span></p>
-        <p class="input-line">Especificar los servicios del paquete y los beneficios para cada uno, incluyendo las
-            tarifas aplicables:
-            ..................................................................................................................
+        <p style="margin-bottom: 4px; line-height: 1.2;">
+            <strong>CLAUSULA DECIMA QUINTA. - Empaquetamiento de servicios:</strong>
         </p>
-
-        <p>El abonado acepta el presente contrato con sus términos y condiciones y demás documentos anexos para lo cual
-            deja constancia de lo anterior y firman junto con <span class="mark">(FIBERCOM ECUADOR)</span> en tres
-            ejemplares del mismo tenor, en la ciudad de
-            <strong>{{ mb_strtoupper($contract->client->ciudad ?? 'GUARANDA') }}</strong> a los
-            <strong>{{ \Carbon\Carbon::parse($contract->fecha)->format('d') }}</strong> días del mes de
-            <strong>{{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('F') }}</strong> del año
-            <strong>{{ \Carbon\Carbon::parse($contract->fecha)->format('Y') }}</strong>.
+        <div style="margin-bottom: 4px;">
+            La contratación incluye empaquetamiento de servicios: Si.... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: #ffffff; vertical-align: middle; margin-right: 30px;"></span> NO..... <span style="display: inline-block; width: 14px; height: 14px; border: 1px solid #7da64e; background-color: #a8d08d; vertical-align: middle;"></span>
+        </div>
+        <p style="margin-bottom: 3px; line-height: 1.2;">
+            Especificar los servicios del paquete y los beneficios para cada uno, incluyendo las tarifas aplicables:
         </p>
-        <p>La fecha de inscripción del modelo de contrato de adhesión que se utiliza es el <strong>20</strong> de
-            <strong>Mayo</strong> de <strong>2020</strong>.
-        </p>
-
-        <table class="signature-table">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 8pt;">
             <tr>
-                <td>
-                    @if($signatureImg)
-                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                <th style="border: 1px solid #000; padding: 2px 4px; text-align: left; font-weight: bold; background-color: #f2f2f2;">PLAN CONTRATO</th>
+                <th style="border: 1px solid #000; padding: 2px 4px; text-align: left; font-weight: bold; background-color: #f2f2f2;">MEGAS</th>
+                <th style="border: 1px solid #000; padding: 2px 4px; text-align: left; font-weight: bold; background-color: #f2f2f2;">TARIFA SIN IVA</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 4px;">{{ mb_strtoupper($contract->plan->nombre_plan ?? 'FIBER HOME ESTUDIANTIL') }}</td>
+                <td style="border: 1px solid #000; padding: 2px 4px;">{{ $contract->plan->velocidad ?? '400' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 4px;">{{ number_format(($contract->plan->precio ?? 20) / 1.15, 2) }}</td>
+            </tr>
+        </table>
+
+        <p style="margin-bottom: 4px; line-height: 1.2;">
+            El abonado acepta el presente contrato con sus términos y condiciones y demás documentos anexos para lo cual deja constancia de lo anterior y firman junto con (FIBERCOM ECUADOR) en tres ejemplares del mismo tenor, en la ciudad de. Guaranda a los {{ \Carbon\Carbon::parse($contract->fecha)->format('d') }} días del mes de {{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('F') }} del año {{ \Carbon\Carbon::parse($contract->fecha)->format('Y') }}
+        </p>
+        <p style="margin-bottom: 8px; line-height: 1.2;">
+            <strong>La fecha de inscripción del modelo de contrato de adhesión que se utiliza es el 27 de noviembre de 2025</strong>
+        </p>
+
+        <p style="margin-bottom: 2px; font-weight: bold;">Firman las partes:</p>
+        <table style="width: 100%; border: none; margin-top: 2px;">
+            <tr style="border: none;">
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($providerSigImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 25px;"></div>
                     @endif
-                    _________________________<br>
-                    <strong>{{ mb_strtoupper($contract->client->nombre) }}
-                        {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>
-                    <strong>C.I. {{ $contract->client->cedula }}</strong><br>
-                    <strong>ABONADO/SUSCRIPTOR</strong>
+                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
+                        PRESTADOR
+                    </div>
                 </td>
-                <td>
-                    _________________________<br>
-                    <strong>LUCIA DEL SOCORRO URBANO URBANO</strong><br>
-                    <strong>PRESTADOR</strong>
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($signatureImg)
+                        <img src="{{ $signatureImg }}" style="max-height: 38px; width: auto; margin-bottom: -6px;"><br>
+                    @else
+                        <div style="height: 25px;"></div>
+                    @endif
+                    ____________________________________<br>
+                    <span style="font-size: 8pt; font-weight: bold;">
+                        {{ mb_strtoupper($contract->client->nombre) }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+                        C.I. {{ $contract->client->cedula }}<br>
+                        ABONADO/SUSCRIPTOR
+                    </span>
                 </td>
             </tr>
         </table>
 
-        {{-- ANEXO 1f --}}
+        {{-- ANEXO 1 --}}
         <div class="page-break"></div>
-        <div class="anexo-title">ANEXO 1f</div>
-        <p><strong>Nombre del Plan: SERVICIO DE ACCESO A INTERNET
-                ({{ mb_strtoupper($contract->plan->nombre_plan ?? 'PLAN ELEGIDO') }})</strong></p>
-        <p>FECHA: <strong>{{ \Carbon\Carbon::parse($contract->fecha)->format('d') }}</strong> de
-            <strong>{{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('F') }}</strong> del
-            <strong>{{ \Carbon\Carbon::parse($contract->fecha)->format('Y') }}</strong>
-        </p>
+        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px;">ANEXO 1</div>
+        <div style="border: 1px solid #000; text-align: center; font-weight: bold; padding: 2px; font-size: 9.5pt; margin-bottom: 4px; background-color: #f2f2f2;">
+            SERVICIO DE ACCESO A INTERNET
+        </div>
 
-        <p><strong>Red de Acceso:</strong></p>
-        <table class="table-compact">
+        <div style="border: 1px solid #000; padding: 2px 6px; font-size: 8.5pt; font-weight: bold; margin-bottom: 4px;">
+            FECHA: ________ <strong>{{ \Carbon\Carbon::parse($contract->fecha)->format('d') }}</strong> ________ de ___ <strong>{{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('F') }}</strong> ________ del <strong>{{ \Carbon\Carbon::parse($contract->fecha)->format('Y') }}</strong>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 8pt;">
             <tr>
-                <td>Par de cobre</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Coaxial</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Otros</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Fibra Óptica</td>
-                <td class="text-center">X</td>
-            </tr>
-            <tr>
-                <td>Inalámbrico</td>
-                <td></td>
+                <td style="border: 1px solid #000; padding: 2px 4px; background-color: #e6e6e6; font-weight: bold; width: 18%;">Nombre del Plan:</td>
+                <td style="border: 1px solid #000; padding: 2px 6px; font-weight: bold;">{{ mb_strtoupper($contract->plan->nombre_plan ?? 'Fiber Home Estudiantil 400 Megas') }}</td>
             </tr>
         </table>
 
-        <p><strong>Tipo de Cuenta:</strong></p>
-        <table class="table-compact">
+        {{-- Red de Acceso --}}
+        <div style="font-size: 8pt; font-weight: bold; margin-bottom: 1px;">Red de Acceso:</div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 8pt;">
             <tr>
-                <td>Residencial</td>
-                <td class="text-center">
-                    {{ str_contains(strtolower($contract->plan->nombre_plan ?? ''), 'residencial') ? 'X' : '' }}
+                <td style="width: 49%; vertical-align: top; padding: 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Par de cobre</td><td style="border: 1px solid #000; padding: 1px 4px; width: 20%; text-align: center;"></td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Coaxial</td><td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Otros</td><td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td></tr>
+                    </table>
+                </td>
+                <td style="width: 2%;"></td>
+                <td style="width: 49%; vertical-align: top; padding: 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Fibra Optica</td><td style="border: 1px solid #000; padding: 1px 4px; width: 20%; text-align: center; font-weight: bold;">x</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Inalámbrico</td><td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td></tr>
+                        <tr><td style="border: none; padding: 1px 4px;">&nbsp;</td><td style="border: none;"></td></tr>
+                    </table>
                 </td>
             </tr>
+        </table>
+
+        {{-- Tipo de Cuenta --}}
+        <div style="font-size: 8pt; font-weight: bold; margin-bottom: 1px;">Tipo de Cuenta:</div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 8pt;">
             <tr>
-                <td>Cibercafé</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Corporativo</td>
-                <td class="text-center">
-                    {{ str_contains(strtolower($contract->plan->nombre_plan ?? ''), 'corporativo') ? 'X' : '' }}
+                <td style="width: 49%; vertical-align: top; padding: 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Residencial</td><td style="border: 1px solid #000; padding: 1px 4px; width: 20%; text-align: center; font-weight: bold;">x</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Cibercafé</td><td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td></tr>
+                    </table>
+                </td>
+                <td style="width: 2%;"></td>
+                <td style="width: 49%; vertical-align: top; padding: 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Corporativo</td><td style="border: 1px solid #000; padding: 1px 4px; width: 20%; text-align: center;"></td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Otros tipos</td><td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td></tr>
+                    </table>
                 </td>
             </tr>
+        </table>
+
+        {{-- Velocidad --}}
+        <div style="font-size: 7.5pt; font-weight: bold; margin-bottom: 1px;">Velocidad (kbps): si existe velocidad máxima para acceso a internet en servidores internacionales y a través del NAP local, se debe especificar:</div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 8pt;">
             <tr>
-                <td>Otros tipos</td>
-                <td></td>
+                <td style="width: 49%; vertical-align: top; padding: 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Comercial de bajada</td><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; text-align: center;">{{ $contract->plan->velocidad ?? '400' }} Megas</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Mínima efectiva de bajada</td><td style="border: 1px solid #000; padding: 1px 4px; text-align: center;">{{ ((int)($contract->plan->velocidad ?? 400)) * 0.4 }} Megas</td></tr>
+                    </table>
+                </td>
+                <td style="width: 2%;"></td>
+                <td style="width: 49%; vertical-align: top; padding: 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Comercial de subida</td><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; text-align: center;">{{ $contract->plan->velocidad ?? '400' }} Megas</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Mínima efectiva subida</td><td style="border: 1px solid #000; padding: 1px 4px; text-align: center;">{{ ((int)($contract->plan->velocidad ?? 400)) * 0.4 }} Megas</td></tr>
+                    </table>
+                </td>
             </tr>
         </table>
 
-        <p><strong>Velocidad (Mb) (si existe velocidad máxima para acceso a internet en servidores internacionales y a
-                través del NAP local, se debe especificar local, se debe especificar):</strong></p>
-        <p><strong>{{ $contract->plan->velocidad ?? '8' }}:{{ ((int) ($contract->plan->velocidad ?? 8)) / 2 }}</strong>
-        </p>
-        <table>
+        <div style="font-size: 7.5pt; margin-bottom: 4px;">
+            <span style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Nivel de Compartición (1:1,2:1,4:1,8:4)</span>
+            <span style="border: 1px solid #000; padding: 1px 8px; font-weight: bold;">2:1</span>
+        </div>
+
+        <div style="font-size: 7.5pt; margin-bottom: 4px;">
+            <span style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">El contrato incluye permanencia mínima:</span>
+            &nbsp;&nbsp; <strong>SI</strong> &nbsp; <span style="border: 1px solid #000; padding: 0px 5px; font-weight: bold;">x</span>
+            &nbsp;&nbsp; <strong>NO</strong> &nbsp; <span style="border: 1px solid #000; padding: 0px 5px;">&nbsp;&nbsp;</span>
+            &nbsp;&nbsp; <strong>TIEMPO</strong> &nbsp; <span style="border: 1px solid #000; padding: 0px 8px; font-weight: bold;">24 meses</span>
+        </div>
+
+        <div style="font-size: 7.5pt; margin-bottom: 4px;">
+            <span style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Beneficios por permanencia</span>
+            &nbsp;&nbsp;&nbsp;
+            <span style="border: 1px solid #000; padding: 1px 10px; display: inline-block; width: 220px; height: 12px; vertical-align: middle;"></span>
+        </div>
+
+        <div style="font-size: 8pt; font-weight: bold; border: 1px solid #000; padding: 1px 4px; background-color: #f2f2f2; margin-bottom: 3px;">
+            SERVICIOS ADICIONALES QUE SE OFRECE:
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 7.5pt;">
             <tr>
-                <td>Comercial de bajada</td>
-                <td>{{ $contract->plan->velocidad ?? '0' }} Mbps</td>
+                <th style="border: 1px solid #000; padding: 1px 4px; width: 35%;"></th>
+                <th style="border: 1px solid #000; padding: 1px 4px; width: 8%; text-align: center;">SI</th>
+                <th style="border: 1px solid #000; padding: 1px 4px; width: 8%; text-align: center;">NO</th>
+                <th style="border: 1px solid #000; padding: 1px 4px; width: 49%; text-align: left;">Descripción</th>
             </tr>
             <tr>
-                <td>Mínima efectiva de bajada</td>
-                <td>{{ ((int) ($contract->plan->velocidad ?? 0)) * 0.4 }} Mbps</td>
-            </tr>
-        </table>
-        <p><strong>2:1</strong></p>
-        <p><strong>Nivel de Compartición (1:1,2:1,4:1,8:4)</strong></p>
-        <p><strong>El contrato incluye permanencia mínima:</strong> SI <span class="checkbox-symbol">X</span> NO <span
-                class="checkbox-symbol">_</span> TIEMPO: <strong>24 MESES</strong></p>
-        <p><strong>Beneficios por permanencia mínima:</strong> <strong>Exoneración del cargo por instalación (Sin
-                Costo)</strong></p>
-        <p><strong>SERVICIOS ADICIONALES QUE SE OFRECE:</strong></p>
-        <table>
-            <tr>
-                <th>Servicio</th>
-                <th>SI</th>
-                <th>NO</th>
-                <th>Descripción</th>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Cuentas de correo electrónico</td>
+                <td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td>
+                <td style="border: 1px solid #000; padding: 1px 4px; text-align: center; font-weight: bold;"></td>
+                <td style="border: 1px solid #000; padding: 1px 4px;">No. Cuentas, capacidad en el servidor por cuenta (MB)</td>
             </tr>
             <tr>
-                <td>Cuentas de correo electrónico</td>
-                <td class="text-center"></td>
-                <td class="text-center">X</td>
-                <td>No. Cuentas, capacidad en el servidor por cuenta (MB)</td>
-            </tr>
-            <tr>
-                <td>Otros Servicios</td>
-                <td class="text-center"></td>
-                <td class="text-center">X</td>
-                <td></td>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Otros Servicios</td>
+                <td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td>
+                <td style="border: 1px solid #000; padding: 1px 4px; text-align: center;"></td>
+                <td style="border: 1px solid #000; padding: 1px 4px;"></td>
             </tr>
         </table>
 
-        <p><strong>Tarifas (*):</strong></p>
-        <p><strong>Valores a pagar por una sola vez:</strong></p>
-        <table>
+        <div style="font-size: 8pt; font-weight: bold; border: 1px solid #000; padding: 1px 4px; width: 55px; margin-bottom: 2px;">Tarifas;</div>
+        <div style="font-size: 7.5pt; font-weight: bold; border: 1px solid #000; padding: 1px 4px; width: 170px; margin-bottom: 3px;">Valores a pagar por una sola vez:</div>
+
+        <table style="width: 65%; border-collapse: collapse; margin-bottom: 4px; font-size: 7.5pt;">
             <tr>
-                <td>Valor Instalación</td>
-                <td>$0.00 USD (Exento por Contrato)</td>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Plazo para instalar/ activar el servicio (horas /días)</td>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; text-align: center;">48 horas</td>
             </tr>
             <tr>
-                <td>Plazo para instalar/ activar el servicio (horas, días)</td>
-                <td></td>
-            </tr>
-        </table>
-        @php
-            $precioTotal  = (float) ($contract->plan->precio ?? 0);
-            $subtotalSinIva = $precioTotal / 1.15;
-            $ivaValue     = $precioTotal - $subtotalSinIva;
-        @endphp
-        <p><strong>Valores pago Mensual:</strong></p>
-        <table>
-            <tr>
-                <td>Valor mensual plan (Sin Impuestos)</td>
-                <td><strong>${{ number_format($subtotalSinIva, 2) }} USD</strong></td>
-            </tr>
-            <tr>
-                <td>Impuestos SRI (IVA 15%)</td>
-                <td><strong>${{ number_format($ivaValue, 2) }} USD</strong></td>
-            </tr>
-            <tr>
-                <td>Valor total a cancelar</td>
-                <td><strong>${{ number_format($precioTotal, 2) }} USD</strong></td>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Valor Instalación</td>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; text-align: center;">180.00 $ USD</td>
             </tr>
         </table>
-        <p><strong>Detalles otros valores:</strong> ________________________________________________________________</p>
-        <p><strong>Sitio web para consultas de tarifas:</strong> <a
-                href="http://www.signal-internet-ec.com">www.signal-internet-ec.com</a>, <a
-                href="https://fibercom.ec">https://fibercom.ec</a><br>
-            <strong>Sitio web consulta de calidad del servicio:</strong> <a
-                href="http://www.signal-internet-ec.com">www.signal-internet-ec.com</a>, <a
-                href="https://fibercom.ec">https://fibercom.ec</a>
-        </p>
-        <p><strong>Notas:</strong> * Las tarifas no incluyen impuestos de ley</p>
-        <p><strong>Autorización expresa de las partes:</strong></p>
-        <table class="signature-table">
+
+        {{-- Pago Mensual & Detalle otros valores --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 7.5pt;">
             <tr>
-                <td>
-                    @if($signatureImg)
-                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                <td style="width: 48%; vertical-align: top; padding: 0;">
+                    <div style="font-weight: bold; border: 1px solid #000; padding: 1px 4px; margin-bottom: 2px;">Valores pago Mensual:</div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><th style="border: 1px solid #000; padding: 1px 4px;"></th><th style="border: 1px solid #000; padding: 1px 4px; text-align: center;">$ USD</th></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Valor mensual</td><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; text-align: center;">{{ number_format(($contract->plan->precio ?? 20) / 1.15, 2) }}</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Valores otros servicios</td><td style="border: 1px solid #000; padding: 1px 4px;"></td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Valor total</td><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; text-align: center;">{{ number_format(($contract->plan->precio ?? 20) / 1.15, 2) }}</td></tr>
+                    </table>
+                </td>
+                <td style="width: 4%;"></td>
+                <td style="width: 48%; vertical-align: top; padding: 0;">
+                    <div style="font-weight: bold; border: 1px solid #000; padding: 1px 4px; margin-bottom: 2px;">Detalle otros valores:</div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><th style="border: 1px solid #000; padding: 1px 4px;"></th><th style="border: 1px solid #000; padding: 1px 4px; text-align: center;">$ USD</th></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; text-align: center;">Item</td><td style="border: 1px solid #000; padding: 1px 4px;"></td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Otros servicios</td><td style="border: 1px solid #000; padding: 1px 4px;"></td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Total, Otros Valores</td><td style="border: 1px solid #000; padding: 1px 4px;"></td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        {{-- Sitios web --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 7pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold; width: 38%;">Sitio web consulta calidad del servicio:</td>
+                <td style="border: 1px solid #000; padding: 1px 4px; width: 62%;"><a href="http://www.signal-internet-ec.com" style="color:blue; text-decoration:underline;">www.signal-internet-ec.com</a> , <a href="https://fibercom.ec" style="color:blue; text-decoration:underline;">https://fibercom.ec</a></td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Sitio web para consultas de tarifas:</td>
+                <td style="border: 1px solid #000; padding: 1px 4px;"><a href="http://www.signal-internet-ec.com" style="color:blue; text-decoration:underline;">www.signal-internet-ec.com</a> , <a href="https://fibercom.ec" style="color:blue; text-decoration:underline;">https://fibercom.ec</a></td>
+            </tr>
+        </table>
+
+        <div style="font-size: 7.5pt; margin-bottom: 2px;">
+            <strong>Notas:</strong><br>
+            * Las tarifas no incluyen impuestos de ley
+        </div>
+
+        <div style="font-size: 7.5pt; margin-bottom: 4px;">
+            Autorización expresa de las partes:
+        </div>
+
+        {{-- Firmas --}}
+        <table style="width: 100%; border: none; margin-top: 2px;">
+            <tr style="border: none;">
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($providerSigImg)
+                        <div style="text-align: center; margin-bottom: 2px;">
+                            <img src="{{ $providerSigImg }}" style="max-height: 35px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 15px;"></div>
                     @endif
-                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
-                        {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
-                    {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
+                    <div style="border: 1px solid #000; padding: 1px; text-align: center; font-weight: bold; font-size: 7.5pt; width: 120px; margin: 0 auto;">PRESTADOR</div>
                 </td>
-                <td>_________________________<br><strong>LUCIA DEL SOCORRO URBANO URBANO</strong><br><strong>PRESTADOR</strong></td>
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($signatureImg)
+                        <div style="text-align: center; margin-bottom: 2px;">
+                            <img src="{{ $signatureImg }}" style="max-height: 35px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 15px;"></div>
+                    @endif
+                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 2px;">
+                        {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+                        C.I.: {{ $contract->client->cedula ?? '' }}
+                    </div>
+                    <div style="border: 1px solid #000; padding: 1px; text-align: center; font-weight: bold; font-size: 7.5pt; width: 160px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
+                </td>
             </tr>
         </table>
 
         {{-- ANEXO 2 --}}
         <div class="page-break"></div>
-        <div class="anexo-title">ANEXO 2</div>
-        <p><strong>ARRENDAMIENTO O COMPRA DE EQUIPOS</strong></p>
-        <p><strong>DETALLE Y CONDICIONES DE EQUIPOS:</strong></p>
-        <table class="table-fillable">
+        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px;">ANEXO 2</div>
+        <div style="text-align: center; font-weight: bold; font-size: 10pt; margin-bottom: 15px;">
+            ARRENDAMIENTO O COMPRA DE EQUIPOS
+        </div>
+
+        <div style="font-weight: bold; font-size: 9pt; margin-bottom: 6px;">
+            DETALLE Y CONDICIONES DE EQUIPOS:
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
             <tr>
-                <th style="width: 10%;">CANTIDAD</th>
-                <th style="width: 15%;">PRECIO UNIT.</th>
-                <th style="width: 20%;">MARCA</th>
-                <th style="width: 20%;">MODELO</th>
-                <th style="width: 20%;">SERIAL</th>
-                <th style="width: 15%;">NUEVO/USADO</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 14%;">CANTIDAD</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 16%;">PRECIO UNITARIO</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 20%;">MARCA</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 20%;">MODELO</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 16%;">SERIAL</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 14%;">NUEVO/USADO</th>
             </tr>
-            @if($contract->anexo2 && is_array($contract->anexo2->equipos))
-                @foreach($contract->anexo2->equipos as $equipo)
-                    <tr>
-                        <td class="text-center">{{ $equipo['cantidad'] ?? '' }}</td>
-                        <td class="text-center">
-                            {{ isset($equipo['precio_unitario']) ? '$' . number_format($equipo['precio_unitario'], 2) : '' }}
-                        </td>
-                        <td>{{ mb_strtoupper($equipo['marca'] ?? '') }}</td>
-                        <td>{{ mb_strtoupper($equipo['modelo'] ?? '') }}</td>
-                        <td>{{ mb_strtoupper($equipo['serial'] ?? '') }}</td>
-                        <td class="text-center">{{ mb_strtoupper($equipo['estado_equipo'] ?? '') }}</td>
-                    </tr>
-                @endforeach
-                {{-- Fill remaining rows to reach a minimum of 2 for layout consistency --}}
-                @for($i = count($contract->anexo2->equipos); $i < 2; $i++)
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                @endfor
-            @else
+            @php
+                $equiposList = ($contract->anexo2 && is_array($contract->anexo2->equipos) && count($contract->anexo2->equipos) > 0)
+                    ? $contract->anexo2->equipos
+                    : (is_array($contract->equipos) ? $contract->equipos : []);
+                $minRows = max(3, count($equiposList));
+            @endphp
+            @for($i = 0; $i < $minRows; $i++)
+                @php $eq = $equiposList[$i] ?? null; @endphp
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td style="border: 1px solid #000; padding: 4px 6px; height: 18px;">{{ $eq['cantidad'] ?? '' }}</td>
+                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ isset($eq['precio_unitario']) ? '$' . number_format($eq['precio_unitario'], 2) : '' }}</td>
+                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['marca'] ?? '') }}</td>
+                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['modelo'] ?? '') }}</td>
+                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['serial'] ?? '') }}</td>
+                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['estado_equipo'] ?? '') }}</td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            @endif
+            @endfor
         </table>
 
-        <table class="table-compact">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
             <tr>
-                <td style="width: 70%;">CLIENTE NOS COMPRA EQUIPOS A CREDITO</td>
-                <td style="width: 15%; text-align: center;">SI:
-                    {{ ($contract->anexo2 && $contract->anexo2->compra_credito) ? 'X' : '' }}
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">CLIENTE NOS COMPRA EQUIPOS A CREDITO</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
+                    SI: {{ ($contract->anexo2 && $contract->anexo2->compra_credito) ? 'X' : '' }}
                 </td>
-                <td style="width: 15%; text-align: center;">NO:
-                    {{ ($contract->anexo2 && !$contract->anexo2->compra_credito) ? 'X' : '' }}
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
+                    NO: {{ ($contract->anexo2 && !$contract->anexo2->compra_credito) ? 'X' : '' }}
                 </td>
             </tr>
             <tr>
-                <td>CLIENTE NOS ARRIENDA EQUIPOS</td>
-                <td style="text-align: center;">SI:
-                    {{ ($contract->anexo2 && $contract->anexo2->arrendamiento) ? 'X' : '' }}
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">CLIENTE NOS ARRIENDA EQUIPOS</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    SI: {{ ($contract->anexo2 && $contract->anexo2->arrendamiento) ? 'X' : '' }}
                 </td>
-                <td style="text-align: center;">NO:
-                    {{ ($contract->anexo2 && !$contract->anexo2->arrendamiento) ? 'X' : '' }}
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    NO: {{ ($contract->anexo2 && !$contract->anexo2->arrendamiento) ? 'X' : '' }}
                 </td>
             </tr>
             <tr>
-                <td>CLIENTE NOS COMPRA EQUIPOS DE CONTADO:</td>
-                <td style="text-align: center;">SI:
-                    {{ ($contract->anexo2 && $contract->anexo2->compra_contado) ? 'X' : '' }}
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">CLIENTE NOS COMPRA EQUIPOS DE CONTADO:</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    SI: {{ ($contract->anexo2 && $contract->anexo2->compra_contado) ? 'X' : '' }}
                 </td>
-                <td style="text-align: center;">NO:
-                    {{ ($contract->anexo2 && !$contract->anexo2->compra_contado) ? 'X' : '' }}
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    NO: {{ ($contract->anexo2 && !$contract->anexo2->compra_contado) ? 'X' : '' }}
                 </td>
             </tr>
         </table>
 
-        <table class="table-fillable">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 8.5pt;">
             <tr>
-                <th style="width: 33%;">VALOR MENSUAL POR ARRENDAMIENTO</th>
-                <th style="width: 33%;">VALOR MENSUAL POR COMPRA A CREDITO</th>
-                <th style="width: 34%;">CANTIDAD DE MESES POR COBRAR</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 35%; text-align: left;">VALOR MENSUAL POR ARRENDAMIENTO</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 35%; text-align: left;">VALOR MENSUAL POR COMPRA A CREDITO</th>
+                <th style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 30%; text-align: left;">CANTIDAD DE MESES POR COBRAR</th>
             </tr>
             <tr>
-                <td class="text-center">
+                <td style="border: 1px solid #000; padding: 4px 6px; height: 18px;">
                     {{ ($contract->anexo2 && $contract->anexo2->valor_mensual_arrendamiento > 0) ? '$' . number_format($contract->anexo2->valor_mensual_arrendamiento, 2) : '' }}
                 </td>
-                <td class="text-center">
+                <td style="border: 1px solid #000; padding: 4px 6px;">
                     {{ ($contract->anexo2 && $contract->anexo2->valor_mensual_compra_credito > 0) ? '$' . number_format($contract->anexo2->valor_mensual_compra_credito, 2) : '' }}
                 </td>
-                <td class="text-center">
-                    {{ ($contract->anexo2 && $contract->anexo2->cantidad_meses) ? $contract->anexo2->cantidad_meses . ' MESES' : '' }}
+                <td style="border: 1px solid #000; padding: 4px 6px;">
+                    {{ ($contract->anexo2 && $contract->anexo2->cantidad_meses) ? $contract->anexo2->cantidad_meses : '' }}
                 </td>
             </tr>
         </table>
-        <p><strong>Autorización expresa de las partes:</strong></p>
-        <table class="signature-table">
-            <tr>
-                <td>
-                    @if($signatureImg)
-                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+
+        <div style="font-size: 8.5pt; margin-bottom: 30px;">
+            Autorización expresa de las partes:
+        </div>
+
+        {{-- Firmas --}}
+        <table style="width: 100%; border: none; margin-top: 10px;">
+            <tr style="border: none;">
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($providerSigImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
                     @endif
-                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
-                        {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
-                    {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
                 </td>
-                <td>_________________________<br><strong>LUCIA DEL SOCORRO URBANO URBANO</strong><br><strong>PRESTADOR</strong></td>
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($signatureImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
+                    @endif
+                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
+                        {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+                        C.I.: {{ $contract->client->cedula ?? '' }}
+                    </div>
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
+                </td>
             </tr>
         </table>
 
         {{-- ANEXO 3 --}}
         <div class="page-break"></div>
-        <div class="anexo-title">ANEXO 3</div>
-        <p><strong>ACTA DE INSTALACION Y ACTIVACION</strong></p>
-        <p class="input-line">Fecha y hora de instalación: <strong>{{ \Carbon\Carbon::parse($contract->anexo2->completado_en ?? $contract->fecha)->translatedFormat('d \d\e F \d\e Y') }} {{ \Carbon\Carbon::parse($contract->anexo2->completado_en ?? $contract->hora_creacion)->format('H:i') }}</strong><br>
-            Lugar de la instalación: <strong>{{ mb_strtoupper($contract->direccion_servicio ?? $contract->direccion_instalacion ?? $contract->client->direccion) }}</strong><br>
-            IP asignada al cliente: <strong>{{ $contract->anexo2->datos_anexo3['ip_asignada'] ?? '__________________________________' }}</strong></p>
+        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px;">ANEXO 3</div>
+        <div style="text-align: center; font-weight: bold; font-size: 10pt; margin-bottom: 15px;">
+            ACTA DE INSTALACION Y ACTIVACION
+        </div>
 
-        <table class="table-fillable">
+        {{-- Dynamic Info Fields --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt;">
             <tr>
-                <td>Cliente verificó ancho de banda instalado</td>
-                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && isset($contract->anexo2->datos_anexo3['verifico_ancho_banda'])) ? 'SI' : '' }}</td>
-                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && !isset($contract->anexo2->datos_anexo3['verifico_ancho_banda'])) ? 'NO' : '' }}</td>
-            </tr>
-        </table>
-
-        <p class="input-line">Características de la computadora del cliente: <strong>{{ $contract->anexo2->datos_anexo3['caracteristicas_pc'] ?? '__________________________________' }}</strong><br>
-            ______________________________________________________________________________</p>
-        <table class="table-compact">
-            <tr>
-                <td>Cliente tiene puesta a tierra</td>
-                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && isset($contract->anexo2->datos_anexo3['puesta_a_tierra'])) ? 'SI' : '' }}</td>
-                <td style="width: 10%; text-align: center;">{{ ($contract->anexo2 && !isset($contract->anexo2->datos_anexo3['puesta_a_tierra'])) ? 'NO' : '' }}</td>
-            </tr>
-        </table>
-
-        <table class="table-fillable">
-            <tr>
-                <td>Cliente pide bloqueo de páginas web</td>
-                <td style="width: 5%; text-align: center;">{{ ($contract->anexo2 && ($contract->anexo2->datos_anexo3['bloqueo_web'] ?? '') != 'No') ? 'SI' : 'NO' }}</td>
-                <td style="width: 5%;"></td>
-                <td style="width: 40%;">DETALLE: <strong>{{ $contract->anexo2->datos_anexo3['bloqueo_web'] ?? '' }}</strong></td>
-            </tr>
-            <tr>
-                <td>Cliente pide bloqueo de servicios</td>
-                <td style="text-align: center;">{{ ($contract->anexo2 && ($contract->anexo2->datos_anexo3['bloqueo_servicios'] ?? '') != 'No') ? 'SI' : 'NO' }}</td>
-                <td></td>
-                <td>DETALLE: <strong>{{ $contract->anexo2->datos_anexo3['bloqueo_servicios'] ?? '' }}</strong></td>
-            </tr>
-            <tr>
-                <td>Cliente pide bloqueo de puertos</td>
-                <td style="text-align: center;">{{ ($contract->anexo2 && ($contract->anexo2->datos_anexo3['bloqueo_puertos'] ?? '') != 'No') ? 'SI' : 'NO' }}</td>
-                <td></td>
-                <td>DETALLE: <strong>{{ $contract->anexo2->datos_anexo3['bloqueo_puertos'] ?? '' }}</strong></td>
-            </tr>
-            <tr>
-                <td colspan="3" style="height: 60px;">DETALLE DE MATERIAL UTILIZADO PARA INSTALACION POR PARTE DE
-                    PRESTADOR</td>
-                <td><strong>{{ $contract->anexo2->datos_anexo3['material_utilizado'] ?? '' }}</strong></td>
-            </tr>
-        </table>
-        <p><strong>Autorización expresa de las partes:</strong></p>
-        <table class="signature-table">
-            <tr>
-                <td>
-                    @if($signatureImg)
-                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
-                    @endif
-                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
-                        {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
-                    {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
+                <td style="font-weight: bold; width: 28%; padding: 4px 0; vertical-align: middle;">Fecha y hora de instalación:</td>
+                <td style="padding: 4px 0;">
+                    <div style="border: 1px solid #000; padding: 3px 8px; width: 90%;">
+                        {{ \Carbon\Carbon::parse($contract->anexo2->completado_en ?? $contract->fecha)->format('d/m/Y') }}
+                    </div>
                 </td>
-                <td>_________________________<br><strong>LUCIA DEL SOCORRO URBANO URBANO</strong><br><strong>PRESTADOR</strong></td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; padding: 4px 0; vertical-align: middle;">Lugar de la instalación:</td>
+                <td style="padding: 4px 0;">
+                    <div style="border: 1px solid #000; padding: 3px 8px; width: 98%;">
+                        {{ $contract->direccion_servicio ?? $contract->direccion_instalacion ?? $contract->client->direccion }}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; padding: 4px 0; vertical-align: middle;">IP asignada al cliente:</td>
+                <td style="padding: 4px 0;">
+                    <div style="border: 1px solid #000; padding: 3px 8px; width: 90%; height: 16px;">
+                        {{ $contract->anexo2->datos_anexo3['ip_asignada'] ?? '' }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        @php
+            $a3 = $contract->anexo2->datos_anexo3 ?? [];
+            $verificoBanda = isset($a3['verifico_ancho_banda']) ? (bool)$a3['verifico_ancho_banda'] : true;
+            $puestaTierra = isset($a3['puesta_a_tierra']) ? (bool)$a3['puesta_a_tierra'] : false;
+            $bloqueoWeb = $a3['bloqueo_web'] ?? 'No';
+            $bloqueoServicios = $a3['bloqueo_servicios'] ?? 'No';
+            $bloqueoPuertos = $a3['bloqueo_puertos'] ?? 'No';
+        @endphp
+
+        {{-- Table 1 --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">Cliente verificó ancho de banda instalado</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
+                    SI {{ $verificoBanda ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
+                    NO {{ !$verificoBanda ? 'x' : '' }}
+                </td>
+            </tr>
+        </table>
+
+        {{-- Table 2 --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">Características de la computadora del cliente</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; width: 55%; height: 35px; vertical-align: top;">
+                    {{ $a3['caracteristicas_pc'] ?? '' }}
+                </td>
+            </tr>
+        </table>
+
+        {{-- Table 3 --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">Cliente tiene puesta a tierra</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
+                    SI {{ $puestaTierra ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
+                    NO {{ !$puestaTierra ? 'x' : '' }}
+                </td>
+            </tr>
+        </table>
+
+        {{-- Table 4: Bloqueos y Material --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 8.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 40%;">Cliente pide bloqueo de páginas web</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 8%; text-align: center;">
+                    SI {{ ($bloqueoWeb != 'No' && $bloqueoWeb != '') ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 12%;">
+                    NO {{ ($bloqueoWeb == 'No' || $bloqueoWeb == '') ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 40%;">
+                    DETALLE: {{ ($bloqueoWeb != 'No') ? $bloqueoWeb : '' }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">Cliente pide bloqueo de servicios</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; text-align: center;">
+                    SI {{ ($bloqueoServicios != 'No' && $bloqueoServicios != '') ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    NO {{ ($bloqueoServicios == 'No' || $bloqueoServicios == '') ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    DETALLE: {{ ($bloqueoServicios != 'No') ? $bloqueoServicios : '' }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">Cliente pide bloqueo de puertos</td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; text-align: center;">
+                    SI {{ ($bloqueoPuertos != 'No' && $bloqueoPuertos != '') ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    NO {{ ($bloqueoPuertos == 'No' || $bloqueoPuertos == '') ? 'x' : '' }}
+                </td>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
+                    DETALLE: {{ ($bloqueoPuertos != 'No') ? $bloqueoPuertos : '' }}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; vertical-align: top;">
+                    DETALLE DE MATERIAL UTILIZADO PARA INSTALACION POR PARTE DE PRESTADOR
+                </td>
+                <td colspan="3" style="border: 1px solid #000; padding: 4px 6px; height: 40px; vertical-align: top;">
+                    {{ $a3['material_utilizado'] ?? '' }}
+                </td>
+            </tr>
+        </table>
+
+        <div style="font-size: 8.5pt; margin-bottom: 30px;">
+            Autorización expresa de las partes:
+        </div>
+
+        {{-- Firmas --}}
+        <table style="width: 100%; border: none; margin-top: 10px;">
+            <tr style="border: none;">
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($providerSigImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
+                    @endif
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
+                </td>
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($signatureImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
+                    @endif
+                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
+                        {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+                        C.I.: {{ $contract->client->cedula ?? '' }}
+                    </div>
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
+                </td>
             </tr>
         </table>
 
         {{-- ANEXO 4 --}}
         <div class="page-break"></div>
-        <div class="anexo-title">ANEXO 4</div>
-        <p><strong>FORMA DE PAGO</strong></p>
-        <table class="table-compact">
+        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px;">ANEXO 4</div>
+        <div style="text-align: center; font-weight: bold; font-size: 10pt; margin-bottom: 12px;">FORMA DE PAGO</div>
+
+        @php
+            $dp = is_array($contract->datos_pago) ? $contract->datos_pago : (json_decode($contract->datos_pago ?? '[]', true) ?: []);
+            $payment = strtolower($contract->payment ?? $contract->metodo_pago ?? '');
+            $isDirect = ($payment == 'direct' || $payment == 'window' || $payment == 'efectivo' || $payment == 'pago directo');
+            $isTransfer = ($payment == 'transfer' || $payment == 'deposito' || $payment == 'transferencia');
+            $isAuto = ($payment == 'auto' || $payment == 'debito_banco' || $payment == 'cuenta' || $payment == 'debito automatico cuenta');
+            $isCard = ($payment == 'card' || $payment == 'tarjeta' || $payment == 'debito_tarjeta' || $payment == 'debito automatico tarjeta');
+        @endphp
+
+        {{-- Table 1: Formas de pago --}}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8pt;">
             <tr>
-                <td>Pago directo en oficina de Prestador</td>
-                <td style="width: 15%; text-align: center;">SI: {{ ($contract->payment == 'direct' || $contract->metodo_pago == 'direct' || $contract->payment == 'window' || $contract->metodo_pago == 'window') ? 'X' : '' }}</td>
-                <td style="width: 15%; text-align: center;">NO: {{ !($contract->payment == 'direct' || $contract->metodo_pago == 'direct' || $contract->payment == 'window' || $contract->metodo_pago == 'window') ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; width: 60%;">Pago directo en oficina de Prestador</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; width: 20%; text-align: left;">SI {{ $isDirect ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; width: 20%; text-align: left;">NO {{ !$isDirect ? 'X' : '' }}</td>
             </tr>
             <tr>
-                <td>Deposito o transferencia a la cuenta bancaria del Prestador</td>
-                <td style="width: 15%; text-align: center;">SI: {{ ($contract->payment == 'transfer' || $contract->metodo_pago == 'transfer') ? 'X' : '' }}</td>
-                <td style="width: 15%; text-align: center;">NO: {{ !($contract->payment == 'transfer' || $contract->metodo_pago == 'transfer') ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold;">Deposito o transferencia a la cuenta bancaria del Prestador</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; text-align: left;">SI {{ $isTransfer ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; text-align: left;">NO {{ !$isTransfer ? 'X' : '' }}</td>
             </tr>
             <tr>
-                <td>Débito automático a la cuenta bancaria del Abonado</td>
-                <td style="width: 15%; text-align: center;">SI: {{ ($contract->payment == 'auto' || $contract->metodo_pago == 'auto') ? 'X' : '' }}</td>
-                <td style="width: 15%; text-align: center;">NO: {{ !($contract->payment == 'auto' || $contract->metodo_pago == 'auto') ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold;">Débito automático a la cuenta bancaria del Abonado</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; text-align: left;">SI {{ $isAuto ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; text-align: left;">NO {{ !$isAuto ? 'X' : '' }}</td>
             </tr>
             <tr>
-                <td>Débito automático a la tarjeta de crédito del Abonado</td>
-                <td style="width: 15%; text-align: center;">SI: {{ ($contract->payment == 'card' || $contract->metodo_pago == 'card') ? 'X' : '' }}</td>
-                <td style="width: 15%; text-align: center;">NO: {{ !($contract->payment == 'card' || $contract->metodo_pago == 'card') ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold;">Débito automático a la tarjeta de crédito del Abonado</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; text-align: left;">SI {{ $isCard ? 'X' : '' }}</td>
+                <td style="border: 1px solid #000; padding: 3px 6px; font-weight: bold; text-align: left;">NO {{ !$isCard ? 'X' : '' }}</td>
             </tr>
         </table>
-        <p>Para efecto de depósito o transferencia a la cuenta bancaria del Prestador, se detalla la información de
-            esta:<br>
-            BANCO: ____________ TIPO DE CUENTA: ____________ NÚMERO DE CUENTA: ____________ NOMBRE DE PRESTADOR: LUCIA
-            DEL SOCORRO URBANO URBANO NO. DE RUC: 0201657897001, se enviará foto del depósito o transferencia al número
-            celular de contacto del Prestador No. ____________, se enviará factura al correo electrónico del Abonado:
-            <strong>{{ strtolower($contract->client->email ?? '') }}</strong>
-        </p>
-        <p>Para efecto de débito automático a la cuenta bancaria del Abonado, se detalla la información de la misma:
-            BANCO: ____________ TIPO DE CUENTA: ____________ NÚMERO DE CUENTA: ____________ NOMBRE DE ABONADO:
-            <strong>{{ mb_strtoupper($contract->client->nombre) }}
-                {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong>, NO. DE IDENTIFICACION:
-            <strong>{{ $contract->client->cedula }}</strong>, se enviará factura al correo electrónico del Abonado:
-            <strong>{{ strtolower($contract->client->email ?? '') }}</strong>
-        </p>
-        <p>Para efecto de débito automático a la tarjeta de crédito del Abonado, se detalla la información de la misma:
-            BANCO EMISOR: ____________ NOMBRE DE LA TARJETA: ____________ NÚMERO DE TARJETA: ____________ NÚMERO DE
-            CÓDIGO: ____________ NOMBRE DE ABONADO: <strong>{{ mb_strtoupper($contract->client->nombre) }}
-                {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong> NO. DE IDENTIFICACION:
-            <strong>{{ $contract->client->cedula }}</strong>, se enviará factura al correo electrónico del Abonado:
-            <strong>{{ strtolower($contract->client->email ?? '') }}</strong>
-        </p>
-        <p><strong>Autorización expresa de las partes:</strong></p>
-        <table class="signature-table">
+
+        {{-- Section 1 --}}
+        <div style="font-size: 8pt; margin-bottom: 6px;">
+            Para efecto de <strong>depósito o transferencia</strong> a la cuenta bancaria del Prestador, se detalla la información de la misma:
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 7.5pt;">
             <tr>
-                <td>
-                    @if($signatureImg)
-                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold; width: 35%;">BANCO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; width: 32.5%;">{{ $isTransfer ? mb_strtoupper($dp['banco'] ?? '') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; width: 32.5%;">{{ $isTransfer ? mb_strtoupper($dp['banco_2'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">TIPO DE CUENTA:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['tipo_cuenta'] ?? '') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['tipo_cuenta_2'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NUMERO DE CUENTA:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? ($dp['numero_cuenta'] ?? '') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? ($dp['numero_cuenta_2'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NOMBRE DE PRESTADOR:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['nombre_prestador'] ?? 'LUCIA DEL SOCORRO URBANO URBANO') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;"></td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">N°. DE RUC:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? ($dp['ruc_prestador'] ?? '0201657897001') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;"></td>
+            </tr>
+        </table>
+        <div style="font-size: 7.5pt; margin-bottom: 12px; line-height: 1.2;">
+            Se enviará foto del deposito o transferencia al numero celular de contacto del Prestador N° <strong>0990303604</strong>, se enviará factura al correo electrónico del prestador, <span style="color: #0066cc; text-decoration: underline;">ventas@fibercom.ec</span>
+        </div>
+
+        {{-- Section 2 --}}
+        <div style="font-size: 8pt; margin-bottom: 6px;">
+            Para efecto de débito automático a la cuenta bancaria del Abonado, se detalla la información de la misma:
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 7.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold; width: 45%;">BANCO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; width: 55%;">{{ $isAuto ? mb_strtoupper($dp['banco_auto'] ?? $dp['banco'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">TIPO DE CUENTA:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isAuto ? mb_strtoupper($dp['tipo_cuenta_auto'] ?? $dp['tipo_cuenta'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NUMERO DE CUENTA:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isAuto ? ($dp['numero_cuenta_auto'] ?? $dp['numero_cuenta'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NUMERO DEL ABONADO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isAuto ? ($contract->client->n_telefono ?? $contract->client->telefono ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NUMERO DE IDENTIFICACION:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isAuto ? ($contract->client->cedula ?? '') : '' }}</td>
+            </tr>
+        </table>
+        <div style="font-size: 7.5pt; margin-bottom: 12px; line-height: 1.2;">
+            Se enviará factura al correo electrónico del Abonado .........................................
+        </div>
+
+        {{-- Section 3 --}}
+        <div style="font-size: 8pt; margin-bottom: 6px;">
+            Para efecto de débito automático a la tarjeta de crédito del Abonado, se detalla la información de la misma:
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 7.5pt;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold; width: 45%;">BANCO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; width: 55%;">{{ $isCard ? mb_strtoupper($dp['banco_emisor'] ?? $dp['banco_card'] ?? $dp['banco'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">EMISOR:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isCard ? mb_strtoupper($dp['emisor_card'] ?? $dp['emisor'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NOMBRE DE LA TARJETA:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isCard ? mb_strtoupper($dp['nombre_tarjeta'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NUMERO DE LA TARJETA:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isCard ? ($dp['numero_tarjeta'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NUMERO DE CODIGO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isCard ? ($dp['codigo_tarjeta'] ?? $dp['codigo_seguridad'] ?? $dp['cvv'] ?? '') : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NOMBRE DEL ABONADO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isCard ? (mb_strtoupper($contract->client->nombre ?? '') . ' ' . mb_strtoupper($contract->client->apellido ?? '')) : '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">N° DE IDENTIFICACION</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isCard ? ($contract->client->cedula ?? '') : '' }}</td>
+            </tr>
+        </table>
+        <div style="font-size: 7.5pt; margin-bottom: 20px; line-height: 1.2;">
+            Se enviará factura al correo electrónico del Abonado ....................................................................................
+        </div>
+
+        {{-- Signatures --}}
+        <div style="font-size: 8pt; margin-bottom: 10px;">
+            Autorización expresa de las partes:
+        </div>
+
+        <table style="width: 100%; border: none; margin-top: 10px;">
+            <tr style="border: none;">
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($providerSigImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
                     @endif
-                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
-                        {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
-                    {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
                 </td>
-                <td>_________________________<br><strong>LUCIA DEL SOCORRO URBANO URBANO</strong><br><strong>PRESTADOR</strong></td>
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($signatureImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
+                    @endif
+                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
+                        {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+                        C.I.: {{ $contract->client->cedula ?? '' }}
+                    </div>
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
+                </td>
             </tr>
         </table>
 
         {{-- ANEXO 5 --}}
         <div class="page-break"></div>
-        <div class="anexo-title">ANEXO 5</div>
-        <p><strong>Autorización expresa de uso de información personal</strong></p>
-        <p>El abonado/suscriptor por medio de este anexo, deja en constancia que autoriza al Prestador, basado en el
-            Artículo 121 del Reglamento General a Ley Orgánica de Telecomunicaciones, y en la Ley Orgánica de Protección
-            de Datos Personales, su Reglamento General y las directrices emitidas por la Autoridad de Protección de
-            Datos, al uso de datos o información personal a la cual tiene acceso El Prestador del abonado/suscriptor.
+        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 40px;">ANEXO 5</div>
+
+        <div style="font-size: 8.5pt; font-weight: bold; margin-bottom: 35px;">
+            Autorización expresa de uso de información personal
+        </div>
+
+        <p style="font-size: 8.5pt; text-align: justify; line-height: 1.4; margin-bottom: 35px;">
+            El abonado/suscriptor por medio de este anexo, deja en constancia que autoriza al Prestador, basado en el Artículo 121 del Reglamento General a Ley Orgánica de Telecomunicaciones, y en la Ley Orgánica de Protección de Datos Personales, su Reglamento General y las directrices emitidas por la Autoridad de Protección de Datos, al uso de datos o información personal a la cual tiene acceso El Prestador del abonado/suscriptor.
         </p>
-        <p>Esta autorización rige a partir de la fecha de suscripción de este contrato de adhesión. La información
-            personal sólo será utilizada para promociones de planes o premios que sortee El Prestador y la información
-            sólo será publicada en la página web oficial del Prestador, en cualquier momento, El abonado/suscriptor,
-            podrá revocar su consentimiento y lo comunicará a través de medios físicos o electrónicos al Prestador, sin
-            que el Prestador pueda condicionar o establecer requisitos para tal fin, adicionales a la simple voluntad
-            del abonado/suscriptor.</p>
-        <p>Fecha de validez: {{ \Carbon\Carbon::parse($contract->fecha)->translatedFormat('d \d\e F \d\e Y') }}</p>
-        <table class="signature-table">
-            <tr>
-                <td>
-                    @if($signatureImg)
-                        <img src="{{ $signatureImg }}" style="max-height: 80px; width: auto; margin-bottom: -20px;"><br>
+
+        <p style="font-size: 8.5pt; text-align: justify; line-height: 1.4; margin-bottom: 50px;">
+            Esta autorización rige a partir de la fecha de suscripción de este contrato de adhesión. La información personal sólo será utilizada para promociones de planes o premios que sortee El Prestador y la información sólo será publicada en la página web oficial del Prestador, en cualquier momento, El abonado/suscriptor, podrá revocar su consentimiento y lo comunicará a través de medios físicos o electrónicos al Prestador, sin que el Prestador pueda condicionar o establecer requisitos para tal fin, adicionales a la simple voluntad del abonado/suscriptor.
+        </p>
+
+        <div style="font-size: 8.5pt; margin-bottom: 120px;">
+            Fecha de validez {{ $contract->fecha ? \Carbon\Carbon::parse($contract->fecha)->format('d/m/Y') : '' }}
+        </div>
+
+        {{-- Signatures --}}
+        <table style="width: 100%; border: none; margin-top: 20px;">
+            <tr style="border: none;">
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($providerSigImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
                     @endif
-                    _________________________<br><strong>{{ mb_strtoupper($contract->client->nombre) }}
-                        {{ mb_strtoupper($contract->client->apellido ?? '') }}</strong><br>C.I.
-                    {{ $contract->client->cedula }}<br>ABONADO/SUSCRIPTOR
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
                 </td>
-                <td>_________________________<br><strong>LUCIA DEL SOCORRO URBANO URBANO</strong><br><strong>PRESTADOR</strong></td>
+                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
+                    @if($signatureImg)
+                        <div style="text-align: center; margin-bottom: 4px;">
+                            <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
+                        </div>
+                    @else
+                        <div style="height: 20px;"></div>
+                    @endif
+                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
+                        {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+                        C.I.: {{ $contract->client->cedula ?? '' }}
+                    </div>
+                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
+                </td>
             </tr>
         </table>
+
+        {{-- NOTAS IMPORTANTES DEL SERVICIO Y EQUIPOS --}}
+        <div class="page-break"></div>
+        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-top: 10px; margin-bottom: 25px;">
+            NOTAS IMPORTANTES DEL SERVICIO Y EQUIPOS
+        </div>
+
+        <div style="font-size: 8.5pt; line-height: 1.25; color: #000;">
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •El valor de la renta mensual por servicio de internet será fija y estará vigente por dos años (24 meses)
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •La renta mensual debe ser cancelada en la modalidad post pago una vez concluida la instalación.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •Los equipos deben ser conectados a energía eléctrica regulada con conexión a tierra.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •Facturación en tarifa plana, puede utilizar el servicio todo el día o no usar nada, sin embargo, cada mes paga siempre el mismo valor fijo.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                <strong>•Para servicio al cliente comunicarse al siguiente número de WhatsApp:</strong><br>
+                <strong>SIGNAL INTERNET /FIBERCOM ECUADOR: 0990303604</strong>
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •La visita técnica cuando la falla NO sea imputable al proveedor tendrá un costo de $10.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •Si el cliente se cambia de domicilio y desea continuar con el servicio tendrá un costo de $20 por reinstalación más 0,25 ctvs. por cada metro de fibra instalado.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •Nivel de compresión: Plan Home 2:1; Plan Pymes/Cyber 1:1 y Planes corporativos 1:1 clear channel
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •El equipo es Instalado a Modalidad de Préstamo por lo tanto será retirado a la terminación del contrato, sin ningún tipo de reembolso económico.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •Autorizo para que la información de mi comportamiento financiero sea compartida con el Buró de crédito.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •El valor cancelado por instalación corresponde a material no renovable: cables y conectores, honorarios del técnico y comisión al vendedor, NO corresponde en ningún caso a venta de equipos.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •La instalación del servicio de Internet puede adelantarse como atrasarse de la fecha establecida en la solicitud de instalación.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •El cliente tiene la obligación de firmar el contrato en el tiempo estipulado (8 días) caso contrario se retirará equipos sin rembolso alguno.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •SIGNAL INTERNET/FIBERCOM ECUADOR no realiza suspensiones temporales del servicio, ya que si no está en la capacidad de seguir con el contrato se recomienda la cancelación del mismo. Así podremos evitar más montos adicionales a su factura.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •En caso de terminación anticipada del contrato, el cliente pagará el valor proporcional de los costos incurridos en la instalación.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •Si el cliente no cumpliera su obligación del pago mensual automáticamente se deshabilitará el servicio por falta de pago RECUERDE, los rubros siguen corriendo a pesar de que el sistema este deshabilitado hasta que el valor sea cancelado.
+            </p>
+            <p style="margin-bottom: 6px; text-align: justify;">
+                •El cliente activo no podrá mover o cambiar de posición los equipos exteriores (antena) sea este en el mismo lugar de domicilio o a otro domicilio, sin previo aviso, el cliente debe llamar para pedir una vista técnica.
+            </p>
+            <p style="margin-bottom: 35px; text-align: justify;">
+                •El personal de SIGNAL INTERNET/FIBERCOM ECUADOR está autorizado para Instalar el Servicio de Internet y cobrar SOLO los valores detallados en dicho documento.
+            </p>
+
+            <p style="margin-bottom: 8px; text-align: justify;">
+                •SIGNAL INTERNET con tecnología de radioenlace: costo de instalación $60 incluye 20m de cable de red cat5e, cada metro adicional tendrá un costo de $0.50ctvs.
+            </p>
+            <p style="margin-bottom: 8px; text-align: justify;">
+                •FIBERCOM ECUADOR con tecnología de FTTH - fibra óptica: costo de instalación $180,00 incluye 300m de cable fibra cada metro adicional tendrá un costo de $0.25ctvs.
+            </p>
+        </div>
+
+        {{-- FINAL PAGE: NOTAS FINALES Y AUTORIZACIÓN TITULAR --}}
+        <div class="page-break"></div>
+
+        <div style="font-size: 8.5pt; line-height: 1.4; color: #000; margin-top: 10px;">
+            <p style="margin-bottom: 8px; text-align: justify;">
+                •Los planes HOME NO deben usarse para reventa de servicio en Cybers café o similares, una vez detectado se facturará el valor restante acumulado el Plan Pymes desde el primer día de contrato, sin perjuicios de que la ARCOTEL establezca sanciones según establece la Ley Especial de Telecomunicaciones.
+            </p>
+            <p style="margin-bottom: 8px; text-align: justify;">
+                <strong>•FORMAS DE PAGO: La forma de pago se realiza los primeros días (1 al 6) de cada mes, en oficinas de la ciudad de Guaranda, en caso de transferencia o depósito bancario a la CTA. CTE. Bco. Pichincha # 2100224953 a nombre de LUCIA URBANO URBANO, después realizada la transferencia o el pago llamar PBX: (03) 3033680 o WhatsApp 099 6034510, 0990303604 para confirmar el número de documento o control.</strong>
+            </p>
+            <p style="margin-bottom: 40px; text-align: justify;">
+                <strong>•Horarios de atención GUARANDA: lunes a viernes de 8:00am a 17:00pm en horario continuo, sábados de 9:00 am a 13:00 pm</strong>
+            </p>
+        </div>
+
+        {{-- AUTORIZACIÓN TITULAR --}}
+        <div style="text-align: center; font-weight: bold; font-size: 10.5pt; margin-bottom: 20px;">
+            AUTORIZACIÓN TITULAR
+        </div>
+
+        <p style="font-size: 8.5pt; text-align: justify; line-height: 1.4; margin-bottom: 60px;">
+            Autorizo(amos) expresa e irrevocablemente a LUCIA DEL SOCORRO URBANO URBANO – SIGNAL INTERNET o a quien sea en el futuro el cesionario, beneficiario o acreedor del crédito solicitado o del documento o titulado cambiario que lo respalde para que obtenga cuantas veces sean necesarias, de cualquier fuente de información, incluidos los buros de crédito, mi información de riesgos crediticios, de igual forma LUCIA DEL SOCORRO URBANO URBANO – SIGNAL INTERNET o a quien sea en el futuro el cesionario, beneficiario o acreedor del crédito solicitado o del documento o título cambiario que lo respalde, que expresamente autorizado para que pueda transferir o entregar dicha información a los burós de crédito y/o a la Central de Riesgos si fuera pertinente.
+        </p>
+
+        <div style="font-size: 8.5pt; line-height: 1.5;">
+            --------------------------------------------------<br>
+            NOMBRE: {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+            CI: {{ $contract->client->cedula ?? '' }}
+        </div>
 
     </main>
 </body>

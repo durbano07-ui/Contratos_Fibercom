@@ -21,10 +21,17 @@ class Contract extends Model
         'hora_creacion',
         'direccion_servicio',
         'metodo_pago',
+        'datos_pago',
         'duracion',
         'beneficio_ley',
         'pdf_ruta',
         'estado_anexo2',
+        'equipos',
+    ];
+
+    protected $casts = [
+        'datos_pago' => 'array',
+        'equipos'    => 'array',
     ];
 
     public function user()

@@ -11,30 +11,27 @@ class AdminSeeder extends Seeder
     {
         // Administrador: acceso completo al sistema
         User::updateOrCreate(
-            ['email' => 'admin@fibercom.com'],
+            ['cedula' => '1710034065'],
             [
-                'name'     => 'Admin Fibercom',
-                'password' => bcrypt('admin123'),
-                'role'     => 'administrador',
+                'name' => 'Admin Fibercom',
+                'role' => 'administrador',
             ]
         );
 
         // Administrativo: solo puede gestionar sus contratos
         User::updateOrCreate(
-            ['email' => 'operador@fibercom.com'],
+            ['cedula' => '1721528659'],
             [
-                'name'     => 'Operador Fibercom',
-                'password' => bcrypt('op123456'),
-                'role'     => 'administrativo',
+                'name' => 'Operador Fibercom',
+                'role' => 'administrativo',
             ]
         );
         // Técnico (jefe de grupo): llena el Anexo 2 en su panel
         User::updateOrCreate(
-            ['email' => 'tecnico@fibercom.com'],
+            ['cedula' => '1710034073'],
             [
-                'name'     => 'Jefe Técnico Fibercom',
-                'password' => bcrypt('tec123456'),
-                'role'     => 'tecnico',
+                'name' => 'Jefe Técnico Fibercom',
+                'role' => 'tecnico',
             ]
         );
     }

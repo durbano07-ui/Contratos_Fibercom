@@ -66,7 +66,8 @@ class ContractController extends Controller
     {
         $tiposConexion = InternetType::all();
         $tecnicos      = \App\Models\User::where('role', 'tecnico')->orderBy('name')->get();
-        return view('contracts.create', compact('tiposConexion', 'tecnicos'));
+        $equipos       = \App\Models\Equipment::orderBy('categoria')->orderBy('nombre')->get();
+        return view('contracts.create', compact('tiposConexion', 'tecnicos', 'equipos'));
     }
 
     public function store(Request $request)
@@ -75,7 +76,21 @@ class ContractController extends Controller
             'client.nombre'    => 'required',
             'client.cedula'    => 'required',
             'contract.id_plan' => 'required|exists:internet_plans,id_plan',
+            'firma_prestador'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('firma_prestador')) {
+            $file = $request->file('firma_prestador');
+            $ext = strtolower($file->getClientOriginalExtension());
+            $filename = 'firma_prestador.' . (in_array($ext, ['jpg', 'jpeg']) ? $ext : 'png');
+            $file->storeAs('public', $filename);
+
+            $publicImgDir = public_path('img');
+            if (!file_exists($publicImgDir)) {
+                @mkdir($publicImgDir, 0777, true);
+            }
+            @copy($file->getRealPath(), $publicImgDir . '/' . $filename);
+        }
 
         // Usar el usuario autenticado real (no User::first())
         $contract = $this->contractService->createContract(

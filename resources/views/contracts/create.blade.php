@@ -27,7 +27,7 @@
             <input class="w-full bg-transparent border-none p-0 text-4xl font-extrabold tracking-tighter text-primary placeholder:text-surface-container-highest focus:ring-0 focus:outline-none" placeholder="Ingrese nombre o razón social..." type="text"/>
         </div>
         
-        <form class="space-y-20" method="POST" action="{{ route('contracts.store') }}">
+        <form class="space-y-20" method="POST" action="{{ route('contracts.store') }}" enctype="multipart/form-data">
             @csrf
             
             <!-- Section 01: Datos del Cliente -->
@@ -63,7 +63,7 @@
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Teléfono Móvil</label>
-                        <input id="input-telefono" name="client[telefono]" pattern="09[0-9]{8}" maxlength="10" title="Debe empezar con 09 y tener 10 dígitos exactamente" required class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm" type="text" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 1 && this.value !== '0') this.value = '0'; if(this.value.length === 2 && this.value !== '09') this.value = '0';"/>
+                        <input id="input-telefono" name="client[n_telefono]" pattern="09[0-9]{8}" maxlength="10" title="Debe empezar con 09 y tener 10 dígitos exactamente" required class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm" type="text" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 1 && this.value !== '0') this.value = '0'; if(this.value.length === 2 && this.value !== '09') this.value = '0';"/>
                     </div>
                 </div>
             </section>
@@ -76,7 +76,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="md:col-span-4 space-y-1">
-                        <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Dirección Exacta</label>
+                        <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Dirección Tributaria</label>
                         <input name="client[direccion]" required class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm" type="text" placeholder="Ej. Calle Principal y Secundaria, Casa #123"/>
                     </div>
                     <div class="space-y-1">
@@ -170,42 +170,151 @@
                     <span class="text-4xl font-light text-secondary opacity-30">04</span>
                     <h2 class="text-xl font-bold tracking-tight uppercase">Método de Pago</h2>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <label class="cursor-pointer">
-                        <input checked class="hidden peer" name="contract[payment]" value="direct" type="radio"/>
-                        <div class="h-full flex flex-col items-center text-center p-4 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm">
-                            <span class="material-symbols-outlined mb-2" data-icon="payments">payments</span>
-                            <span class="text-[9px] font-bold uppercase tracking-tighter">Pago directo</span>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <label class="cursor-pointer group">
+                        <input checked class="hidden peer payment-method-radio" name="contract[payment]" value="direct" type="radio"/>
+                        <div class="h-full flex flex-col items-center text-center p-5 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm rounded-xl">
+                            <span class="material-symbols-outlined mb-2 text-2xl group-hover:scale-110 transition-transform" data-icon="storefront">storefront</span>
+                            <span class="text-xs font-bold uppercase tracking-tight">Pago Directo / Ventanilla</span>
                         </div>
                     </label>
-                    <label class="cursor-pointer">
-                        <input class="hidden peer" name="contract[payment]" value="auto" type="radio"/>
-                        <div class="h-full flex flex-col items-center text-center p-4 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm">
-                            <span class="material-symbols-outlined mb-2" data-icon="account_balance">account_balance</span>
-                            <span class="text-[9px] font-bold uppercase tracking-tighter">Débito automático</span>
+                    <label class="cursor-pointer group">
+                        <input class="hidden peer payment-method-radio" name="contract[payment]" value="auto" type="radio"/>
+                        <div class="h-full flex flex-col items-center text-center p-5 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm rounded-xl">
+                            <span class="material-symbols-outlined mb-2 text-2xl group-hover:scale-110 transition-transform" data-icon="account_balance">account_balance</span>
+                            <span class="text-xs font-bold uppercase tracking-tight">Débito Automático</span>
                         </div>
                     </label>
-                    <label class="cursor-pointer">
-                        <input class="hidden peer" name="contract[payment]" value="window" type="radio"/>
-                        <div class="h-full flex flex-col items-center text-center p-4 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm">
-                            <span class="material-symbols-outlined mb-2" data-icon="storefront">storefront</span>
-                            <span class="text-[9px] font-bold uppercase tracking-tighter">Pago en ventanilla</span>
+                    <label class="cursor-pointer group">
+                        <input class="hidden peer payment-method-radio" name="contract[payment]" value="card" type="radio"/>
+                        <div class="h-full flex flex-col items-center text-center p-5 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm rounded-xl">
+                            <span class="material-symbols-outlined mb-2 text-2xl group-hover:scale-110 transition-transform" data-icon="credit_card">credit_card</span>
+                            <span class="text-xs font-bold uppercase tracking-tight">Débito Tarjeta</span>
                         </div>
                     </label>
-                    <label class="cursor-pointer">
-                        <input class="hidden peer" name="contract[payment]" value="card" type="radio"/>
-                        <div class="h-full flex flex-col items-center text-center p-4 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm">
-                            <span class="material-symbols-outlined mb-2" data-icon="credit_card">credit_card</span>
-                            <span class="text-[9px] font-bold uppercase tracking-tighter">Débito Tarjeta</span>
+                    <label class="cursor-pointer group">
+                        <input class="hidden peer payment-method-radio" name="contract[payment]" value="transfer" type="radio"/>
+                        <div class="h-full flex flex-col items-center text-center p-5 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm rounded-xl">
+                            <span class="material-symbols-outlined mb-2 text-2xl group-hover:scale-110 transition-transform" data-icon="devices">devices</span>
+                            <span class="text-xs font-bold uppercase tracking-tight">Transferencia</span>
                         </div>
                     </label>
-                    <label class="cursor-pointer">
-                        <input class="hidden peer" name="contract[payment]" value="transfer" type="radio"/>
-                        <div class="h-full flex flex-col items-center text-center p-4 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm">
-                            <span class="material-symbols-outlined mb-2" data-icon="devices">devices</span>
-                            <span class="text-[9px] font-bold uppercase tracking-tighter">Transferencia</span>
+                </div>
+
+                <!-- Contenedor dinámico de datos de pago segun la selección -->
+                <div id="payment-details-container" class="bg-surface-container-low p-6 rounded-xl shadow-sm border border-outline-variant/30 hidden">
+                    
+                    <!-- Campos para Débito Automático -->
+                    <div id="fields-auto" class="payment-fields hidden space-y-4">
+                        <h4 class="text-xs font-bold tracking-widest text-secondary uppercase flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base">account_balance</span> Datos para Débito Automático Bancario
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Banco</label>
+                                <select name="contract[datos_pago][banco]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
+                                    <option value="Banco Pichincha">Banco Pichincha</option>
+                                    <option value="Banco Guayaquil">Banco Guayaquil</option>
+                                    <option value="Produbanco">Produbanco</option>
+                                    <option value="Banco del Pacífico">Banco del Pacífico</option>
+                                    <option value="Banco de Loja">Banco de Loja</option>
+                                    <option value="Banco Bolivariano">Banco Bolivariano</option>
+                                    <option value="Banco Internacional">Banco Internacional</option>
+                                    <option value="Cooperativa JEP">Cooperativa JEP</option>
+                                    <option value="Otra Institución">Otra Institución</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Tipo de Cuenta</label>
+                                <select name="contract[datos_pago][tipo_cuenta]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
+                                    <option value="Ahorros">Ahorros</option>
+                                    <option value="Corriente">Corriente</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Número de Cuenta</label>
+                                <input name="contract[datos_pago][numero_cuenta]" type="text" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm" placeholder="Ej: 2200123456" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                            </div>
                         </div>
-                    </label>
+                    </div>
+
+                    <!-- Campos para Débito Tarjeta -->
+                    <div id="fields-card" class="payment-fields hidden space-y-4">
+                        <h4 class="text-xs font-bold tracking-widest text-secondary uppercase flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base">credit_card</span> Datos de Tarjeta de Crédito
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Banco Emisor</label>
+                                <select name="contract[datos_pago][banco_emisor]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
+                                    <option value="Banco Pichincha">Banco Pichincha</option>
+                                    <option value="Banco Guayaquil">Banco Guayaquil</option>
+                                    <option value="Produbanco">Produbanco</option>
+                                    <option value="Banco del Pacífico">Banco del Pacífico</option>
+                                    <option value="Banco de Loja">Banco de Loja</option>
+                                    <option value="Banco Bolivariano">Banco Bolivariano</option>
+                                    <option value="Banco Internacional">Banco Internacional</option>
+                                    <option value="Diners Club Ecuador">Diners Club Ecuador</option>
+                                    <option value="Cooperativa JEP">Cooperativa JEP</option>
+                                    <option value="Otra Institución">Otra Institución</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Tarjeta / Franquicia</label>
+                                <select name="contract[datos_pago][nombre_tarjeta]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
+                                    <option value="Visa">Visa</option>
+                                    <option value="Mastercard">Mastercard</option>
+                                    <option value="Diners Club">Diners Club</option>
+                                    <option value="American Express">American Express</option>
+                                    <option value="Discover">Discover</option>
+                                    <option value="Alia">Alia</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Número de Tarjeta</label>
+                                <input name="contract[datos_pago][numero_tarjeta]" type="text" maxlength="16" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm" placeholder="4532 XXXX XXXX 1234" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Código CVC / Código</label>
+                                <input name="contract[datos_pago][codigo_tarjeta]" type="text" maxlength="4" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm" placeholder="123" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos para Transferencia -->
+                    <div id="fields-transfer" class="payment-fields hidden space-y-4">
+                        <h4 class="text-xs font-bold tracking-widest text-secondary uppercase flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base">devices</span> Datos de Transferencia Bancaria
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Banco de Origen</label>
+                                <select name="contract[datos_pago][banco]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
+                                    <option value="Banco Pichincha">Banco Pichincha</option>
+                                    <option value="Banco Guayaquil">Banco Guayaquil</option>
+                                    <option value="Produbanco">Produbanco</option>
+                                    <option value="Banco del Pacífico">Banco del Pacífico</option>
+                                    <option value="Banco de Loja">Banco de Loja</option>
+                                    <option value="Banco Bolivariano">Banco Bolivariano</option>
+                                    <option value="Banco Internacional">Banco Internacional</option>
+                                    <option value="Cooperativa JEP">Cooperativa JEP</option>
+                                    <option value="Otra Institución">Otra Institución</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Tipo de Cuenta</label>
+                                <select name="contract[datos_pago][tipo_cuenta]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
+                                    <option value="Ahorros">Ahorros</option>
+                                    <option value="Corriente">Corriente</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Nº de Cuenta / Comprobante</label>
+                                <input name="contract[datos_pago][numero_cuenta]" type="text" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm" placeholder="Ej: Ref #98765432"/>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </section>
 
@@ -233,10 +342,80 @@
                 </div>
             </section>
 
-            <!-- Section 06: Asignación de Técnico -->
+            <!-- Section 06: Equipos Entregados / Asignados (Anexo 2) -->
             <section>
                 <div class="flex items-baseline gap-4 mb-8">
                     <span class="text-4xl font-light text-secondary opacity-30">06</span>
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight uppercase">Equipos Asignados al Contrato</h2>
+                        <p class="text-xs text-on-surface-variant font-medium">Seleccione los equipos del catálogo que se completarán automáticamente en el Anexo 2 del contrato.</p>
+                    </div>
+                </div>
+
+                @if(isset($equipos) && count($equipos) > 0)
+                    <div class="overflow-x-auto bg-white border border-outline-variant/40 rounded-xl shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low border-b border-outline-variant/40 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                                    <th class="py-3 px-4 text-center w-12">Asignar</th>
+                                    <th class="py-3 px-4">Equipo</th>
+                                    <th class="py-3 px-4">Categoría</th>
+                                    <th class="py-3 px-4 text-center w-28">Cantidad</th>
+                                    <th class="py-3 px-4">Nº Serie / Marca (Opcional)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant/30 text-xs">
+                                @foreach($equipos as $index => $equipo)
+                                    @php
+                                        $nombreClean = trim(str_replace([' (AC1200 / AX1800)', '(AC1200 / AX1800)'], '', $equipo->nombre));
+                                        $icon = 'devices_other';
+                                        $nombreLower = strtolower($nombreClean);
+                                        if (str_contains($nombreLower, 'router')) $icon = 'router';
+                                        elseif (str_contains($nombreLower, 'onu') || str_contains($nombreLower, 'ont')) $icon = 'hub';
+                                        elseif (str_contains($nombreLower, 'regulador') || str_contains($nombreLower, 'voltaje')) $icon = 'bolt';
+                                        elseif (str_contains($nombreLower, 'cable') || str_contains($nombreLower, 'utp')) $icon = 'settings_ethernet';
+                                    @endphp
+                                    <tr class="hover:bg-surface-container-lowest/50 transition-colors">
+                                        <td class="py-3 px-4 text-center">
+                                            <input type="checkbox" name="contract[equipos][{{ $index }}][seleccionado]" value="1" class="w-4 h-4 accent-secondary rounded border-outline-variant transition-all cursor-pointer" {{ $index < 3 ? 'checked' : '' }}/>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="p-1.5 bg-surface-container-low text-secondary rounded-md shrink-0">
+                                                    <span class="material-symbols-outlined text-lg" data-icon="{{ $icon }}">{{ $icon }}</span>
+                                                </div>
+                                                <span class="font-bold text-on-surface">{{ $nombreClean }}</span>
+                                            </div>
+                                            <input type="hidden" name="contract[equipos][{{ $index }}][nombre]" value="{{ $nombreClean }}">
+                                            <input type="hidden" name="contract[equipos][{{ $index }}][categoria]" value="{{ $equipo->categoria }}">
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider bg-surface-container-high px-2 py-0.5 rounded text-on-surface-variant/80">
+                                                {{ $equipo->categoria }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <input type="number" min="1" max="100" name="contract[equipos][{{ $index }}][cantidad]" value="1" class="w-20 bg-surface-container-low border border-outline-variant rounded-md py-1 px-2 text-center text-xs font-bold focus:ring-1 focus:ring-primary"/>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <input type="text" name="contract[equipos][{{ $index }}][serial]" placeholder="Ej. SN893427492" class="w-full bg-surface-container-low border border-outline-variant rounded-md py-1 px-3 text-xs font-mono focus:ring-1 focus:ring-primary"/>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="p-6 bg-surface-container-low rounded-xl text-center text-xs font-bold text-on-surface-variant uppercase tracking-widest">
+                        No hay equipos en inventario. El administrador puede agregarlos desde la sección de Equipos.
+                    </div>
+                @endif
+            </section>
+
+            <!-- Section 07: Asignación de Técnico -->
+            <section>
+                <div class="flex items-baseline gap-4 mb-8">
+                    <span class="text-4xl font-light text-secondary opacity-30">07</span>
                     <h2 class="text-xl font-bold tracking-tight uppercase">Asignación de Técnico</h2>
                 </div>
                 <div class="space-y-4">
@@ -254,6 +433,22 @@
                     <p class="text-[10px] text-on-surface-variant font-medium italic">* El técnico seleccionado será notificado y responsable de llenar el Anexo 2 (Equipos e Instalación).</p>
                 </div>
             </section>
+
+            <!-- Section 08: Firma / QR del Prestador -->
+            <section>
+                <div class="flex items-baseline gap-4 mb-8">
+                    <span class="text-4xl font-light text-secondary opacity-30">08</span>
+                    <h2 class="text-xl font-bold tracking-tight uppercase">Firma / QR Electrónico del Prestador</h2>
+                </div>
+                <div class="space-y-4 bg-surface-container-low p-6 rounded-xl border border-outline-variant/30">
+                    <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase block">Actualizar Imagen de Firma y QR (Opcional)</label>
+                    <div class="flex items-center gap-4">
+                        <input type="file" name="firma_prestador" accept="image/png,image/jpeg,image/jpg" class="w-full bg-white border border-outline-variant rounded-md py-3 px-4 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-primary file:text-white hover:file:bg-primary-dark transition-all cursor-pointer"/>
+                    </div>
+                    <p class="text-[10px] text-on-surface-variant font-medium italic">* Si sube una nueva firma/QR, esta se aplicará a este y a los próximos contratos generados.</p>
+                </div>
+            </section>
+
 
             <!-- Sticky Footer for Actions -->
             <footer class="fixed bottom-0 left-64 right-0 bg-white/80 backdrop-blur-xl p-6 border-t border-surface-container flex justify-between items-center z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
@@ -301,23 +496,20 @@
                         let opacityClass = 'opacity-10';
 
                         // Dynamic styling matches for WOW effect
-                        if(plan.velocidad.includes('500') || plan.velocidad.includes('600') || plan.velocidad.includes('35')) {
+                        if(plan.velocidad.includes('500') || plan.velocidad.includes('550') || plan.velocidad.includes('600') || plan.velocidad.includes('35')) {
                             bgColor = 'bg-primary';
                             textColor = 'text-white';
                             iconBg = 'bg-secondary';
                             iconName = 'bolt';
                             dividerColor = 'border-white/10';
                             opacityClass = 'opacity-20';
-                        } else if (plan.velocidad.includes('200') || plan.velocidad.includes('300') || plan.velocidad.includes('400') || plan.velocidad.includes('450') || plan.velocidad.includes('20') || plan.velocidad.includes('30')) {
+                        } else if (plan.velocidad.includes('100') || plan.velocidad.includes('150') || plan.velocidad.includes('200') || plan.velocidad.includes('300') || plan.velocidad.includes('400') || plan.velocidad.includes('450') || plan.velocidad.includes('20') || plan.velocidad.includes('30')) {
                             iconBg = 'bg-tertiary-fixed-dim';
                             iconName = 'rocket_launch';
                             opacityClass = 'opacity-20';
                         }
 
-                        // Split plan name
-                        const parts = plan.nombre_plan.split(' ');
-                        const mainName = parts.slice(0, 2).join(' ').toUpperCase();
-                        const subName = parts.slice(2).join(' ').toUpperCase();
+                        const mainName = plan.nombre_plan.toUpperCase();
 
                         const html = `
                             <label class="cursor-pointer group">
@@ -327,16 +519,16 @@
                                         <span class="material-symbols-outlined text-8xl" data-icon="${iconName}">${iconName}</span>
                                     </div>
                                     <div class="mb-4">
-                                        <span class="text-[10px] font-bold tracking-widest text-secondary uppercase">${mainName}</span>
-                                        <h3 class="text-4xl font-extrabold tracking-tighter">${plan.velocidad.replace(' MEGAS', 'MB')}</h3>
-                                        ${subName ? `<span class="text-[10px] font-bold opacity-70 uppercase tracking-widest">${subName}</span>` : ''}
+                                        <span class="text-[10px] font-bold tracking-widest text-secondary uppercase block mb-1">Plan Oficial</span>
+                                        <h3 class="text-2xl font-extrabold tracking-tight mb-1">${mainName}</h3>
+                                        <span class="text-xs font-bold opacity-80 uppercase tracking-widest bg-surface-container px-2.5 py-1 rounded inline-block text-on-surface">${plan.velocidad}</span>
                                     </div>
                                     <ul class="space-y-3 mb-8 text-sm opacity-70 font-medium">
-                                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs" data-icon="check">check</span> Instalación Garantizada</li>
+                                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs" data-icon="check">check</span> Servicio Simétrico</li>
                                         <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs" data-icon="check">check</span> Asistencia Técnica</li>
                                     </ul>
                                     <div class="mt-auto pt-4 border-t ${dividerColor} flex items-end">
-                                        <span class="text-3xl font-extrabold tracking-tight">$${plan.precio}</span><span class="text-xs opacity-50 ml-1 mb-1">/ mes</span>
+                                        <span class="text-3xl font-extrabold tracking-tight">$${parseFloat(plan.precio).toFixed(2)}</span><span class="text-xs opacity-50 ml-1 mb-1">/ mes</span>
                                     </div>
                                 </div>
                             </label>
@@ -365,7 +557,7 @@
         // Location Hierarchy Logic for Bolívar
         const locData = {
             "Bolívar": {
-                "Guaranda": { ciudad: ["Guaranda"], parroquias: ["Guaranda (Sede Principal)", "Ángel Polibio Cháves", "Gabriel Ignacio Veintimilla", "Guanujo", "Facundo Vela", "Julio E. Moreno", "Salinas", "San Lorenzo", "San Luis de Pambil", "San Simón", "Simiatug"] },
+                "Guaranda": { ciudad: ["Guaranda"], parroquias: ["Guaranda (Sede Principal)", "Ángel Polibio Cháves", "Gabriel Ignacio Veintimilla", "Guanujo", "Facundo Vela", "Julio E. Moreno", "Salinas", "San Lorenzo", "San Luis de Pambil", "San Simón", "Santa Fe", "Simiatug"] },
                 "Chillanes": { ciudad: ["Chillanes"], parroquias: ["Chillanes (Urbana)", "San José del Tambo"] },
                 "Chimbo": { ciudad: ["San José de Chimbo"], parroquias: ["San José de Chimbo (Urbana)", "Asunción", "Magdalena", "San Sebastián", "Telimbela"] },
                 "Echeandía": { ciudad: ["Echeandía"], parroquias: ["Echeandía (Urbana)"] },
@@ -422,6 +614,39 @@
         const inputPrefix = document.getElementById('input-email-prefix');
         const selectDomain = document.getElementById('select-email-domain');
         const hiddenEmail = document.getElementById('hidden-email');
+
+        // Payment Method Dynamic Sub-forms Logic
+        const paymentRadios = document.querySelectorAll('.payment-method-radio');
+        const paymentContainer = document.getElementById('payment-details-container');
+        const allPaymentFields = document.querySelectorAll('.payment-fields');
+
+        function updatePaymentFields() {
+            const selectedRadio = document.querySelector('.payment-method-radio:checked');
+            const selectedVal = selectedRadio ? selectedRadio.value : 'direct';
+
+            allPaymentFields.forEach(el => {
+                el.classList.add('hidden');
+                el.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.disabled = true;
+                });
+            });
+
+            if (selectedVal && selectedVal !== 'direct') {
+                paymentContainer.classList.remove('hidden');
+                const targetFields = document.getElementById(`fields-${selectedVal}`);
+                if (targetFields) {
+                    targetFields.classList.remove('hidden');
+                    targetFields.querySelectorAll('input, select, textarea').forEach(input => {
+                        input.disabled = false;
+                    });
+                }
+            } else {
+                paymentContainer.classList.add('hidden');
+            }
+        }
+
+        paymentRadios.forEach(r => r.addEventListener('change', updatePaymentFields));
+        updatePaymentFields();
 
         function updateEmail() {
             if(inputPrefix.value.trim() !== '') {

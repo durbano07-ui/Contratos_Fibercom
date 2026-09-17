@@ -9,7 +9,7 @@ class InternetTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        InternetType::create(['nombre_tipo' => 'Fibra Óptica']);
-        InternetType::create(['nombre_tipo' => 'Radio Enlace']);
+        InternetType::firstOrCreate(['nombre_tipo' => 'Fibra Óptica']);
+        InternetType::firstOrCreate(['nombre_tipo' => 'Radio Enlace']);
     }
 }
