@@ -35,6 +35,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
         Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
         Route::get('/contracts/{id}/pdf', [ContractController::class, 'downloadPdf'])->name('contracts.pdf');
+        Route::get('/contracts/{id}/pdf-anexos', [ContractController::class, 'downloadAnexosPdf'])->name('contracts.anexos.pdf');
+
+        // Contratos: ambos roles pueden editar (el administrativo solo los suyos)
+        Route::get('/contracts/{id}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
+        Route::put('/contracts/{id}', [ContractController::class, 'update'])->name('contracts.update');
 
         // Clientes: ambos roles pueden ver
         Route::get('/clientes', [ClientController::class, 'index'])->name('clientes.index');
@@ -47,9 +52,7 @@ Route::middleware(['auth'])->group(function () {
 // -------------------------------------------------------
 Route::middleware(['auth', 'role:administrador'])->group(function () {
 
-    // Contratos: gestión completa (editar, actualizar, eliminar) solo para administrador
-    Route::get('/contracts/{id}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
-    Route::put('/contracts/{id}', [ContractController::class, 'update'])->name('contracts.update');
+    // Contratos: eliminar solo para administrador
     Route::delete('/contracts/{id}', [ContractController::class, 'destroy'])->name('contracts.destroy');
 
     // Clientes: editar/actualizar/dar de baja (solo Administrador)
@@ -106,4 +109,5 @@ Route::middleware(['auth', 'role:tecnico'])->group(function () {
     Route::get('/tecnico/instalaciones', [TecnicoController::class, 'index'])->name('tecnico.index');
     Route::get('/tecnico/instalaciones/{id}/anexo2', [TecnicoController::class, 'editAnexo2'])->name('tecnico.anexo2');
     Route::post('/tecnico/instalaciones/{id}/anexo2', [TecnicoController::class, 'storeAnexo2'])->name('tecnico.anexo2.store');
+    Route::get('/tecnico/instalaciones/{id}/pdf', [TecnicoController::class, 'downloadAnexosPdf'])->name('tecnico.pdf');
 });

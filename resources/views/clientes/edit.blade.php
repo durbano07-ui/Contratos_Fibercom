@@ -13,7 +13,7 @@
                 <h2 class="font-headline font-bold text-xl">Datos del Cliente</h2>
                 <p class="text-sm text-on-surface-variant mt-1">
                     ID: <strong>CL-{{ str_pad($cliente->id_cliente, 5, '0', STR_PAD_LEFT) }}</strong>
-                    · Cédula: <strong>{{ $cliente->cedula }}</strong>
+                    · Cédula/RUC: <strong>{{ $cliente->cedula }}</strong>
                 </p>
             </div>
             @if($cliente->isBaja())
@@ -49,6 +49,8 @@
                 <div>
                     <label class="block text-sm font-semibold text-on-surface-variant mb-1.5" for="cedula">Cédula / RUC</label>
                     <input id="cedula" name="cedula" type="text" value="{{ old('cedula', $cliente->cedula) }}"
+                        inputmode="numeric" pattern="[0-9]{10}|[0-9]{13}" maxlength="13" title="Cédula (10 dígitos) o RUC (13 dígitos)"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                         class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all @error('cedula') border-error @enderror"
                         required>
                     @error('cedula')<p class="text-error text-xs mt-1">{{ $message }}</p>@enderror

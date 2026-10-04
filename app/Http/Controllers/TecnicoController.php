@@ -61,60 +61,84 @@ class TecnicoController extends Controller
     }
 
     /**
+     * Descarga/Visualiza exclusivamente las 2 hojas de los Anexos 2 y 3.
+     */
+    public function downloadAnexosPdf($id)
+    {
+        $tecnico = Auth::user();
+        $contract = Contract::where('id_tecnico', $tecnico->id)->findOrFail($id);
+
+        return $this->pdfService->streamAnexosPdf($contract);
+    }
+
+    /**
      * Guarda los datos del Anexo 2 y marca el contrato como completado.
      */
     public function storeAnexo2(Request $request, $id)
     {
         $tecnico = Auth::user();
-        $contract = Contract::where('id_tecnico', $tecnico->id)->findOrFail($id);
+        $contract = Contract::with('plan')->where('id_tecnico', $tecnico->id)->findOrFail($id);
 
         $request->validate([
-            'equipos' => 'required|array|min:1',
-            'equipos.*.categoria' => 'required|string',
-            'equipos.*.marca' => 'required|string|max:100',
-            'equipos.*.modelo' => 'required|string|max:100',
-            'equipos.*.cantidad' => 'required|integer|min:1',
-            'equipos.*.serial' => 'nullable|string|max:100',
-            'equipos.*.estado_equipo' => 'required|in:Nuevo,Usado',
-            'compra_credito' => 'nullable|boolean',
-            'arrendamiento' => 'nullable|boolean',
-            'compra_contado' => 'nullable|boolean',
-            'valor_mensual_arrendamiento' => 'nullable|numeric|min:0',
-            'valor_mensual_compra_credito' => 'nullable|numeric|min:0',
-            'cantidad_meses' => 'nullable|integer|min:1',
-            'firma_cliente' => 'required|string',
-            'datos_anexo3' => 'nullable|array',
+            'equipos'                      => 'nullable|array',
+            'equipos.*.categoria'          => 'nullable|string',
+            'equipos.*.marca'              => 'nullable|string|max:100',
+            'equipos.*.modelo'             => 'nullable|string|max:100',
+            'equipos.*.cantidad'           => 'nullable|integer|min:1',
+            'equipos.*.serial'             => 'nullable|string|max:100',
+            'equipos.*.estado_equipo'      => 'nullable|string',
+            'firma_cliente'                => 'nullable|string',
+            'datos_anexo3'                 => 'nullable|array',
         ]);
 
-        // Mapear los datos manuales de los equipos
-        $equiposData = collect($request->equipos)->map(function ($item) {
-            return [
-                'equipment_id' => null, // Manual
-                'nombre' => ($item['marca'] ?? '') . ' ' . ($item['modelo'] ?? ''),
-                'categoria' => $item['categoria'] ?? 'Otro',
-                'marca' => $item['marca'] ?? '',
-                'modelo' => $item['modelo'] ?? '',
-                'cantidad' => (int) ($item['cantidad'] ?? 1),
-                'precio_unitario' => (float) ($item['precio_unitario'] ?? 0),
-                'serial' => $item['serial'] ?? null,
-                'estado_equipo' => $item['estado_equipo'] ?? 'Nuevo',
-            ];
-        })->toArray();
+        // Mapear los datos manuales de los equipos (si se enviaron)
+        $equiposData = [];
+        if ($request->has('equipos') && is_array($request->equipos)) {
+            $equiposData = collect($request->equipos)->filter(function ($item) {
+                return !empty($item['marca']) || !empty($item['modelo']) || !empty($item['categoria']) || !empty($item['serial']);
+            })->map(function ($item) {
+                return [
+                    'equipment_id'    => null,
+                    'nombre'          => trim(($item['marca'] ?? '') . ' ' . ($item['modelo'] ?? '')),
+                    'categoria'       => $item['categoria'] ?? 'Otro',
+                    'marca'           => $item['marca'] ?? '',
+                    'modelo'          => $item['modelo'] ?? '',
+                    'cantidad'        => (int) ($item['cantidad'] ?? 1),
+                    'precio_unitario' => (float) ($item['precio_unitario'] ?? 0),
+                    'serial'          => $item['serial'] ?? null,
+                    'estado_equipo'   => $item['estado_equipo'] ?? 'Nuevo',
+                ];
+            })->values()->toArray();
+        }
+
+        // Si no se llenaron equipos en este formulario, mantener los que ya tenía el contrato
+        if (empty($equiposData) && !empty($contract->equipos)) {
+            $equiposData = $contract->equipos;
+        }
+
+        // Modalidad y Valores automáticos basados en el plan contratado
+        $planPrecio = $contract->plan ? (float) $contract->plan->precio : 0.0;
+        $duracionMeses = !empty($contract->duracion) ? (int) $contract->duracion : 24;
+
+        $firmaCliente = $request->input('firma_cliente');
+        if (empty($firmaCliente) || !str_starts_with($firmaCliente, 'data:image')) {
+            $firmaCliente = null;
+        }
 
         // Crear o actualizar el Anexo 2
         Anexo2::updateOrCreate(
             ['id_contrato' => $contract->id_contrato],
             [
-                'equipos' => $equiposData,
-                'compra_credito' => (bool) $request->compra_credito,
-                'arrendamiento' => (bool) $request->arrendamiento,
-                'compra_contado' => (bool) $request->compra_contado,
-                'valor_mensual_arrendamiento' => $request->valor_mensual_arrendamiento,
-                'valor_mensual_compra_credito' => $request->valor_mensual_compra_credito,
-                'cantidad_meses' => $request->cantidad_meses,
-                'firma_cliente' => $request->firma_cliente,
-                'datos_anexo3' => $request->datos_anexo3,
-                'completado_en' => now(),
+                'equipos'                      => $equiposData,
+                'compra_credito'               => false,
+                'arrendamiento'                => true,
+                'compra_contado'               => false,
+                'valor_mensual_arrendamiento'  => $planPrecio,
+                'valor_mensual_compra_credito' => 0,
+                'cantidad_meses'               => $duracionMeses,
+                'firma_cliente'                => $firmaCliente,
+                'datos_anexo3'                 => $request->datos_anexo3 ?? [],
+                'completado_en'                => now(),
             ]
         );
 
@@ -128,9 +152,9 @@ class TecnicoController extends Controller
 
             \App\Models\AuditLog::create([
                 'user_id' => $tecnico->id,
-                'action' => 'Anexo 2 Completado',
-                'module' => 'Técnico / Anexo 2',
-                'details' => "Contrato #ISP-{$contract->id_contrato} — Anexo 2 llenado por {$tecnico->name}",
+                'action'  => 'Anexo 2 Completado',
+                'module'  => 'Técnico / Anexo 2',
+                'details' => "Contrato #ISP-{$contract->id_contrato} — Anexo 2 completado por {$tecnico->name}",
             ]);
         } catch (\Exception $e) {
             \Log::error("Error al finalizar instalación: " . $e->getMessage());
@@ -138,6 +162,6 @@ class TecnicoController extends Controller
         }
 
         return redirect()->route('tecnico.index')
-            ->with('success', 'Anexo 2 registrado correctamente. El contrato está listo.');
+            ->with('success', 'Instalación finalizada y contrato actualizado correctamente.');
     }
 }

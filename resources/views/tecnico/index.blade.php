@@ -161,7 +161,7 @@
                                     {{ $contract->client->nombre }}
                                 </h3>
                                 <p class="text-[10px] font-bold opacity-50 uppercase tracking-tight">
-                                    C.I. {{ $contract->client->cedula }}
+                                    {{ $contract->client->tipo_identificacion }} {{ $contract->client->cedula }}
                                 </p>
                             </div>
                             <div class="text-right shrink-0">
@@ -183,10 +183,18 @@
                         </div>
 
                         {{-- Acción --}}
-                        <a href="{{ route('tecnico.anexo2', $contract->id_contrato) }}" class="btn-cta">
-                            <span class="material-symbols-outlined">edit_document</span>
-                            Llenar Anexo 2
-                        </a>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('tecnico.anexo2', $contract->id_contrato) }}" class="btn-cta flex-1">
+                                <span class="material-symbols-outlined">edit_document</span>
+                                Llenar Anexo 2
+                            </a>
+                            <a href="{{ route('tecnico.pdf', $contract->id_contrato) }}" target="_blank" 
+                               class="px-3 py-2.5 bg-white border border-[#c4c7c7] rounded-lg text-secondary hover:bg-surface-container transition-colors flex items-center gap-1 text-xs font-black uppercase tracking-wider" 
+                               title="Imprimir Anexos en Blanco (2 Páginas)">
+                                <span class="material-symbols-outlined" style="font-size:18px;">print</span>
+                                <span>Anexos</span>
+                            </a>
+                        </div>
 
                     </div>
                 </div>
@@ -212,7 +220,7 @@
                             <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest opacity-60">Cliente</th>
                             <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest opacity-60">Plan</th>
                             <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest opacity-60 text-center">Fecha</th>
-                            <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest opacity-60 text-right">PDF</th>
+                            <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest opacity-60 text-right">PDF Anexos</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant">
@@ -231,9 +239,11 @@
                                 </p>
                             </td>
                             <td class="px-4 py-3 text-right">
-                                <a href="{{ route('contracts.pdf', $contract->id_contrato) }}" target="_blank"
-                                   class="inline-flex p-2 rounded-lg hover:bg-surface-container transition-colors group" title="Ver PDF">
-                                    <span class="material-symbols-outlined text-secondary group-hover:scale-110 transition-transform" style="font-size:20px !important;">picture_as_pdf</span>
+                                <a href="{{ route('tecnico.pdf', $contract->id_contrato) }}" target="_blank"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-secondary hover:bg-red-100 transition-colors group font-bold text-xs" 
+                                   title="Imprimir Anexos (2 Páginas)">
+                                    <span class="material-symbols-outlined text-secondary group-hover:scale-110 transition-transform" style="font-size:18px !important;">picture_as_pdf</span>
+                                    <span>Imprimir Anexos (2 Págs)</span>
                                 </a>
                             </td>
                         </tr>

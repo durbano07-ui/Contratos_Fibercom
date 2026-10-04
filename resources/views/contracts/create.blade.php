@@ -43,8 +43,8 @@
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Cédula / RUC</label>
-                        <input id="input-cedula" name="client[cedula]" maxlength="13" required class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm" type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
-                        <p class="text-[10px] text-error hidden mt-1 font-bold" id="error-cedula">Cédula o RUC inválido.</p>
+                        <input id="input-cedula" name="client[cedula]" maxlength="13" inputmode="numeric" placeholder="10 dígitos (cédula) o 13 (RUC)" required class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm" type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                        <p class="text-[10px] text-error hidden mt-1 font-bold" id="error-cedula">Cédula (10 dígitos) o RUC (13 dígitos) inválido.</p>
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Correo Electrónico</label>
@@ -55,6 +55,7 @@
                                 <option value="@hotmail.com">@hotmail.com</option>
                                 <option value="@outlook.com">@outlook.com</option>
                                 <option value="@yahoo.com">@yahoo.com</option>
+                                <option value="@yahoo.es">@yahoo.es</option>
                                 <option value="@live.com">@live.com</option>
                                 <option value="@icloud.com">@icloud.com</option>
                             </select>
@@ -196,7 +197,7 @@
                         <input class="hidden peer payment-method-radio" name="contract[payment]" value="transfer" type="radio"/>
                         <div class="h-full flex flex-col items-center text-center p-5 bg-surface-container-low peer-checked:bg-white peer-checked:ring-2 peer-checked:ring-secondary transition-all shadow-sm rounded-xl">
                             <span class="material-symbols-outlined mb-2 text-2xl group-hover:scale-110 transition-transform" data-icon="devices">devices</span>
-                            <span class="text-xs font-bold uppercase tracking-tight">Transferencia</span>
+                            <span class="text-xs font-bold uppercase tracking-tight">Transferencia / Mi Vecino</span>
                         </div>
                     </label>
                 </div>
@@ -284,35 +285,35 @@
                     <!-- Campos para Transferencia -->
                     <div id="fields-transfer" class="payment-fields hidden space-y-4">
                         <h4 class="text-xs font-bold tracking-widest text-secondary uppercase flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base">devices</span> Datos de Transferencia Bancaria
+                            <span class="material-symbols-outlined text-base">account_balance</span> Datos de Pago - Banco Pichincha
                         </h4>
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="space-y-1">
                                 <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Banco de Origen</label>
-                                <select name="contract[datos_pago][banco]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
-                                    <option value="Banco Pichincha">Banco Pichincha</option>
-                                    <option value="Banco Guayaquil">Banco Guayaquil</option>
-                                    <option value="Produbanco">Produbanco</option>
-                                    <option value="Banco del Pacífico">Banco del Pacífico</option>
-                                    <option value="Banco de Loja">Banco de Loja</option>
-                                    <option value="Banco Bolivariano">Banco Bolivariano</option>
-                                    <option value="Banco Internacional">Banco Internacional</option>
-                                    <option value="Cooperativa JEP">Cooperativa JEP</option>
-                                    <option value="Otra Institución">Otra Institución</option>
+                                <select name="contract[datos_pago][banco]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm font-bold text-primary">
+                                    <option value="Banco Pichincha" selected>Banco Pichincha</option>
                                 </select>
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Tipo de Cuenta</label>
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Tipo de Cuenta / Servicio</label>
                                 <select name="contract[datos_pago][tipo_cuenta]" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm">
+                                    <option value="Mi Vecino" selected>Mi Vecino</option>
                                     <option value="Ahorros">Ahorros</option>
                                     <option value="Corriente">Corriente</option>
                                 </select>
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Nº de Cuenta / Comprobante</label>
-                                <input name="contract[datos_pago][numero_cuenta]" type="text" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-3 px-4 shadow-sm text-sm" placeholder="Ej: Ref #98765432"/>
+                                <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase flex items-center justify-between">
+                                    <span>Código Único</span>
+                                    <span class="text-[9px] text-secondary font-bold">(Inmodificable)</span>
+                                </label>
+                                <input name="contract[datos_pago][numero_cuenta]" type="text" value="95149" readonly class="w-full bg-surface-container-high border border-outline-variant rounded-md py-3 px-4 shadow-sm text-base font-black tracking-widest text-primary cursor-not-allowed select-none focus:ring-0 focus:border-outline-variant" title="Código único para pagos en Mi Vecino - Banco Pichincha"/>
+                                <input name="contract[datos_pago][codigo_unico]" type="hidden" value="95149"/>
                             </div>
                         </div>
+
+
                     </div>
 
                 </div>
@@ -419,10 +420,12 @@
                     <h2 class="text-xl font-bold tracking-tight uppercase">Asignación de Técnico</h2>
                 </div>
                 <div class="space-y-4">
-                    <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase block">Seleccione el Técnico (Jefe de Grupo)</label>
+                    <label class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase block">
+                        Seleccione el Técnico (Jefe de Grupo) <span class="font-normal opacity-60 lowercase">(opcional)</span>
+                    </label>
                     <div class="relative group">
-                        <select name="id_tecnico" required class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-4 px-12 shadow-sm appearance-none text-sm font-bold tracking-tight">
-                            <option value="">-- Seleccionar Técnico Capataz --</option>
+                        <select name="id_tecnico" class="w-full bg-white border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary transition-all py-4 px-12 shadow-sm appearance-none text-sm font-bold tracking-tight">
+                            <option value="">-- Sin técnico asignado (Opcional) --</option>
                             @foreach($tecnicos as $tecnico)
                                 <option value="{{ $tecnico->id }}">{{ $tecnico->name }}</option>
                             @endforeach
@@ -430,7 +433,7 @@
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary group-focus-within:scale-110 transition-transform">engineering</span>
                         <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 opacity-50">expand_more</span>
                     </div>
-                    <p class="text-[10px] text-on-surface-variant font-medium italic">* El técnico seleccionado será notificado y responsable de llenar el Anexo 2 (Equipos e Instalación).</p>
+                    <p class="text-[10px] text-on-surface-variant font-medium italic">* Campo opcional. Si no se asigna ahora, el administrador podrá asignarlo o cambiarlo posteriormente al editar el contrato.</p>
                 </div>
             </section>
 
@@ -510,30 +513,84 @@
                         }
 
                         const mainName = plan.nombre_plan.toUpperCase();
+                        const isTerceraEdad = mainName.includes('TERCERA EDAD');
+                        const isDiscapacidad = mainName.includes('DISCAPACIDAD');
+                        const isPromocional = plan.es_promocional || (plan.precio_regular && parseFloat(plan.precio_regular) > parseFloat(plan.precio)) || isTerceraEdad;
+                        const precioReg = plan.precio_regular ? parseFloat(plan.precio_regular) : (isTerceraEdad ? 30.00 : null);
+
+                        let badgeHtml = '';
+                        if (isPromocional) {
+                            badgeHtml = `<span class="text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded bg-secondary text-white inline-block mb-1 shadow-sm">⚡ PRECIO PROMOCIONAL</span>`;
+                        } else {
+                            badgeHtml = `<span class="text-[10px] font-bold tracking-widest text-secondary uppercase block mb-1">Plan Oficial</span>`;
+                        }
+
+                        let priceSection = '';
+                        if (precioReg && precioReg > parseFloat(plan.precio)) {
+                            const ahorro = Math.round((1 - parseFloat(plan.precio) / precioReg) * 100);
+                            priceSection = `
+                                <div class="mt-auto pt-4 border-t ${dividerColor}">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xs line-through opacity-60">Antes: $${precioReg.toFixed(2)}</span>
+                                        <span class="text-[10px] font-extrabold text-emerald-500 bg-emerald-950/20 px-2 py-0.5 rounded border border-emerald-500/30">
+                                            -${ahorro}% Tercera Edad
+                                        </span>
+                                    </div>
+                                    <div class="flex items-end">
+                                        <span class="text-3xl font-extrabold tracking-tight">$${parseFloat(plan.precio).toFixed(2)}</span>
+                                        <span class="text-xs opacity-50 ml-1 mb-1">/ mes</span>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            priceSection = `
+                                <div class="mt-auto pt-4 border-t ${dividerColor} flex items-end">
+                                    <span class="text-3xl font-extrabold tracking-tight">$${parseFloat(plan.precio).toFixed(2)}</span>
+                                    <span class="text-xs opacity-50 ml-1 mb-1">/ mes</span>
+                                </div>
+                            `;
+                        }
+
+                        let extraFeature = '';
+                        if (isTerceraEdad) {
+                            extraFeature = `<li class="flex items-center gap-2 text-emerald-400 font-semibold"><span class="material-symbols-outlined text-xs" data-icon="verified">verified</span> Tarifa preferencial tercera edad</li>`;
+                        } else if (isDiscapacidad) {
+                            extraFeature = `<li class="flex items-center gap-2 text-emerald-400 font-semibold"><span class="material-symbols-outlined text-xs" data-icon="verified">verified</span> Tarifa preferencial discapacidad</li>`;
+                        }
 
                         const html = `
-                            <label class="cursor-pointer group">
+                            <label class="cursor-pointer group plan-option-label" data-tercera-edad="${isTerceraEdad ? '1' : '0'}" data-discapacidad="${isDiscapacidad ? '1' : '0'}">
                                 <input class="hidden peer" name="contract[id_plan]" value="${plan.id_plan}" type="radio" ${index===0 ? 'checked' : ''}/>
                                 <div class="relative ${bgColor} ${textColor} p-8 border-2 ${borderClass} transition-all overflow-hidden h-full flex flex-col shadow-sm rounded-xl">
                                     <div class="absolute -right-4 -top-4 ${iconBg} group-hover:scale-110 transition-transform p-8 rounded-full ${opacityClass}">
                                         <span class="material-symbols-outlined text-8xl" data-icon="${iconName}">${iconName}</span>
                                     </div>
                                     <div class="mb-4">
-                                        <span class="text-[10px] font-bold tracking-widest text-secondary uppercase block mb-1">Plan Oficial</span>
+                                        ${badgeHtml}
                                         <h3 class="text-2xl font-extrabold tracking-tight mb-1">${mainName}</h3>
                                         <span class="text-xs font-bold opacity-80 uppercase tracking-widest bg-surface-container px-2.5 py-1 rounded inline-block text-on-surface">${plan.velocidad}</span>
                                     </div>
                                     <ul class="space-y-3 mb-8 text-sm opacity-70 font-medium">
                                         <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs" data-icon="check">check</span> Servicio Simétrico</li>
                                         <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs" data-icon="check">check</span> Asistencia Técnica</li>
+                                        ${extraFeature}
                                     </ul>
-                                    <div class="mt-auto pt-4 border-t ${dividerColor} flex items-end">
-                                        <span class="text-3xl font-extrabold tracking-tight">$${parseFloat(plan.precio).toFixed(2)}</span><span class="text-xs opacity-50 ml-1 mb-1">/ mes</span>
-                                    </div>
+                                    ${priceSection}
                                 </div>
                             </label>
                         `;
                         plansContainer.insertAdjacentHTML('beforeend', html);
+                    });
+
+                    // Auto-seleccionar beneficio de ley al escoger un plan de tercera edad o discapacidad
+                    document.querySelectorAll('.plan-option-label input[name="contract[id_plan]"]').forEach(radio => {
+                        radio.addEventListener('change', function() {
+                            const parentLabel = this.closest('.plan-option-label');
+                            if (parentLabel && (parentLabel.dataset.terceraEdad === '1' || parentLabel.dataset.discapacidad === '1')) {
+                                const yesRadio = document.querySelector('input[name="contract[beneficio_ley]"][value="1"]');
+                                if (yesRadio) yesRadio.checked = true;
+                            }
+                        });
                     });
                 })
                 .catch(error => {
@@ -656,39 +713,27 @@
         inputPrefix.addEventListener('input', updateEmail);
         selectDomain.addEventListener('change', updateEmail);
 
+        // Cédula: 10 dígitos | RUC: 13 dígitos (debe coincidir con App\Rules\CedulaRuc)
         function validarCedulaRucEcuador(numero) {
-            if (numero.length !== 10 && numero.length !== 13) return false;
-            if (numero.length === 13 && numero.substring(10, 13) !== '001') return false;
+            if (!/^(\d{10}|\d{13})$/.test(numero)) return false;
             const provincia = parseInt(numero.substring(0, 2), 10);
-            if (provincia < 1 || provincia > 24) return false;
-            const tercerDigito = parseInt(numero.substring(2, 3), 10);
+            if (!((provincia >= 1 && provincia <= 24) || provincia === 30)) return false;
 
-            if (tercerDigito < 6) { // Persona Natural
-                const coef = [2, 1, 2, 1, 2, 1, 2, 1, 2];
-                let suma = 0;
-                for (let i = 0; i < 9; i++) {
-                    let valor = parseInt(numero.charAt(i), 10) * coef[i];
-                    suma += (valor > 9 ? valor - 9 : valor);
-                }
-                let calculo = ((Math.floor(suma / 10) + 1) * 10) - suma;
-                if (calculo === 10) calculo = 0;
-                return calculo === parseInt(numero.charAt(9), 10);
-            } else if (tercerDigito === 6) { // Entidad Pública
-                const coef = [3, 2, 7, 6, 5, 4, 3, 2];
-                let suma = 0;
-                for (let i = 0; i < 8; i++) { suma += parseInt(numero.charAt(i), 10) * coef[i]; }
-                let calculo = 11 - (suma % 11);
-                if (calculo === 11) calculo = 0;
-                return calculo === parseInt(numero.charAt(8), 10);
-            } else if (tercerDigito === 9) { // Entidad Privada / RUC
-                const coef = [4, 3, 2, 7, 6, 5, 4, 3, 2];
-                let suma = 0;
-                for (let i = 0; i < 9; i++) { suma += parseInt(numero.charAt(i), 10) * coef[i]; }
-                let calculo = 11 - (suma % 11);
-                if (calculo === 11) calculo = 0;
-                return calculo === parseInt(numero.charAt(9), 10);
+            if (numero.length === 13) {
+                // RUC: sin dígito verificador (el SRI emite RUC que no cumplen módulo 11)
+                return numero.substring(10) !== '000';
             }
-            return false;
+
+            // Cédula: persona natural, dígito verificador módulo 10
+            if (parseInt(numero.charAt(2), 10) >= 6) return false;
+            const coef = [2, 1, 2, 1, 2, 1, 2, 1, 2];
+            let suma = 0;
+            for (let i = 0; i < 9; i++) {
+                let valor = parseInt(numero.charAt(i), 10) * coef[i];
+                suma += (valor > 9 ? valor - 9 : valor);
+            }
+            const verificador = suma % 10 === 0 ? 0 : 10 - (suma % 10);
+            return verificador === parseInt(numero.charAt(9), 10);
         }
 
         inputCedula.addEventListener('input', function() {

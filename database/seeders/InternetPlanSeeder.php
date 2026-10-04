@@ -16,7 +16,13 @@ class InternetPlanSeeder extends Seeder
         if ($fibra) {
             $planesFibra = [
                 ['nombre_plan' => 'FIBER PLAN DISCAPACIDAD', 'precio' => 15.00, 'velocidad' => '100 MEGAS'],
-                ['nombre_plan' => 'FIBER PLAN TERCERA EDAD', 'precio' => 15.00, 'velocidad' => '100 MEGAS'],
+                [
+                    'nombre_plan'    => 'FIBER PLAN TERCERA EDAD 550 MEGAS',
+                    'precio'         => 15.00,
+                    'precio_regular' => 30.00,
+                    'es_promocional' => true,
+                    'velocidad'      => '550 MEGAS',
+                ],
                 ['nombre_plan' => 'PLAN ESTUDIANTIL 400 MEGAS', 'precio' => 20.00, 'velocidad' => '400 MEGAS'],
                 ['nombre_plan' => 'PLAN FAMILIA 500 MEGAS', 'precio' => 25.00, 'velocidad' => '500 MEGAS'],
                 ['nombre_plan' => 'PLAN FULL 550 MEGAS', 'precio' => 30.00, 'velocidad' => '550 MEGAS'],
@@ -24,6 +30,20 @@ class InternetPlanSeeder extends Seeder
             ];
 
             foreach ($planesFibra as $plan) {
+                // Si existía el nombre anterior sin 550 megas, actualizarlo
+                if ($plan['nombre_plan'] === 'FIBER PLAN TERCERA EDAD 550 MEGAS') {
+                    $existente = InternetPlan::where('id_tipo', $fibra->id_tipo)
+                        ->where(function($q) {
+                            $q->where('nombre_plan', 'FIBER PLAN TERCERA EDAD')
+                              ->orWhere('nombre_plan', 'FIBER PLAN TERCERA EDAD 550 MEGAS');
+                        })->first();
+
+                    if ($existente) {
+                        $existente->update($plan);
+                        continue;
+                    }
+                }
+
                 InternetPlan::updateOrCreate(
                     ['id_tipo' => $fibra->id_tipo, 'nombre_plan' => $plan['nombre_plan']],
                     $plan

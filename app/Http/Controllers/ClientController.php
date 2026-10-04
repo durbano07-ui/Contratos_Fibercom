@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\CedulaRuc;
 use App\Services\ClientService;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -67,7 +68,7 @@ class ClientController extends Controller
         $data = $request->validate([
             'nombre'     => 'required|string|max:100',
             'apellido'   => 'nullable|string|max:100',
-            'cedula'     => 'required|string|max:20|unique:clients,cedula,' . $id . ',id_cliente',
+            'cedula'     => ['required', 'string', new CedulaRuc(), 'unique:clients,cedula,' . $id . ',id_cliente'],
             'email'      => 'nullable|email|max:150',
             'direccion'  => 'nullable|string|max:255',
             'ciudad'     => 'nullable|string|max:100',

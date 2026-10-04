@@ -91,7 +91,20 @@
 </td>
 <td class="p-5">{{ $contract->plan->nombre_plan ?? 'Plan no encontrado' }} ({{ $contract->plan->velocidad ?? '' }})</td>
 @if(Auth::user()->isAdministrador())
-<td class="p-5 text-sm text-outline">{{ $contract->user->name ?? '—' }}</td>
+<td class="p-5 text-sm">
+    <div class="font-medium text-on-surface">{{ $contract->user->name ?? '—' }}</div>
+    @if($contract->tecnico)
+        <div class="text-[11px] text-on-surface-variant flex items-center gap-1 mt-0.5" title="Técnico asignado">
+            <span class="material-symbols-outlined text-[13px] text-secondary">engineering</span>
+            <span>{{ $contract->tecnico->name }}</span>
+        </div>
+    @else
+        <div class="text-[11px] text-outline/60 flex items-center gap-1 mt-0.5 italic" title="Sin técnico asignado">
+            <span class="material-symbols-outlined text-[13px]">engineering</span>
+            <span>Sin técnico</span>
+        </div>
+    @endif
+</td>
 @endif
 <td class="p-5">
 <span class="px-3 py-1 bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-wider rounded-full">Activo</span>
@@ -99,10 +112,10 @@
 <td class="p-5 opacity-70">{{ \Carbon\Carbon::parse($contract->fecha)->format('d M Y') }}</td>
 <td class="p-5 text-right">
 <div class="flex justify-end space-x-1">
+    <a href="{{ route('contracts.edit', $contract->id_contrato) }}" class="p-2 hover:text-primary hover:bg-surface-container rounded-lg transition-colors" title="Editar contrato">
+        <span class="material-symbols-outlined" data-icon="edit">edit</span>
+    </a>
     @if(Auth::user()->isAdministrador())
-        <a href="{{ route('contracts.edit', $contract->id_contrato) }}" class="p-2 hover:text-primary hover:bg-surface-container rounded-lg transition-colors" title="Editar contrato">
-            <span class="material-symbols-outlined" data-icon="edit">edit</span>
-        </a>
         <form method="POST" action="{{ route('contracts.destroy', $contract->id_contrato) }}" onsubmit="return confirm('¿Eliminar el contrato #ISP-{{ \Carbon\Carbon::parse($contract->fecha)->format('Y') }}-{{ str_pad($contract->id_contrato, 3, '0', STR_PAD_LEFT) }}? Esta acción no se puede deshacer.')">
             @csrf
             @method('DELETE')
@@ -111,7 +124,10 @@
             </button>
         </form>
     @endif
-    <a href="{{ route('contracts.pdf', $contract->id_contrato) }}" target="_blank" class="p-2 hover:text-secondary transition-colors" title="Descargar PDF">
+    <a href="{{ route('contracts.anexos.pdf', $contract->id_contrato) }}" target="_blank" class="p-2 hover:text-secondary transition-colors" title="Descargar Anexos de Instalación (2 Páginas)">
+        <span class="material-symbols-outlined" data-icon="description">description</span>
+    </a>
+    <a href="{{ route('contracts.pdf', $contract->id_contrato) }}" target="_blank" class="p-2 hover:text-secondary transition-colors" title="Descargar Contrato Completo (PDF)">
         <span class="material-symbols-outlined" data-icon="download">download</span>
     </a>
 </div>

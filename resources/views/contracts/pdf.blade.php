@@ -68,6 +68,7 @@
             width: 100%;
             border-collapse: collapse;
             margin: 0.8em 0;
+            page-break-inside: avoid;
         }
 
         td,
@@ -118,6 +119,11 @@
             page-break-before: always;
         }
 
+        /* Evitar que títulos de cláusula queden solos al pie de página */
+        .clause-title, p > strong:first-child {
+            page-break-after: avoid;
+        }
+
         .text-center {
             text-align: center;
         }
@@ -158,11 +164,14 @@
             public_path('img/firma_prestador.jpeg'),
         ];
         foreach ($possibleSigPaths as $path) {
-            if (file_exists($path)) {
+            if (file_exists($path) && filesize($path) > 0) {
                 $ext = pathinfo($path, PATHINFO_EXTENSION);
                 $mime = in_array(strtolower($ext), ['jpg', 'jpeg']) ? 'image/jpeg' : 'image/png';
-                $providerSigImg = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path));
-                break;
+                $content = @file_get_contents($path);
+                if ($content) {
+                    $providerSigImg = 'data:' . $mime . ';base64,' . base64_encode($content);
+                    break;
+                }
             }
         }
     @endphp
@@ -188,9 +197,13 @@
         <h1 style="text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 12px; margin-top: 0;">CONTRATO DE ADHESIÓN</h1>
 
         @php
-            $signatureImg = ($contract->anexo2 && $contract->anexo2->firma_cliente)
-                ? $contract->anexo2->firma_cliente
-                : null;
+            $signatureImg = null;
+            if ($contract->anexo2 && !empty($contract->anexo2->firma_cliente)) {
+                $rawSig = trim($contract->anexo2->firma_cliente);
+                if (str_starts_with($rawSig, 'data:image') && strlen($rawSig) > 100) {
+                    $signatureImg = $rawSig;
+                }
+            }
         @endphp
 
         {{-- CLAUSULA PRIMERA --}}
@@ -331,7 +344,6 @@
             El prestador del servicio, previo a la firma o aceptación del contrato, deberá verificar la identidad del abonado, cliente, usuario o suscriptor. El prestador debe de indicar los mecanismos de identificación disponibles para que el abonado elija, siguiendo la Ley Orgánica de Protección de Datos Personales y la Ley Orgánica del Sistema Nacional de Registro de Datos Públicos y sus respectivos reglamentos.
         </p>
 
-        <div style="page-break-after: always;"></div>
         <p style="margin-bottom: 8px; line-height: 1.25;">Las partes se comprometen a respetar el plazo de vigencia pactado, sin perjuicio de que el abonado/suscriptor
             pueda darlo por terminado unilateralmente, en cualquier tiempo, previa notificación física o electrónica,
             con por lo menos quince (15) días de anticipación, conforme lo dispuesto en las Leyes Orgánicas de
@@ -405,7 +417,6 @@
             Los beneficios de la permanencia mínima son:
         </p>
 
-        <div style="page-break-after: always;"></div>
         <p style="margin-top: 0px; margin-bottom: 8px; line-height: 1.25;">
             <strong>No pago por el costo de instalación del servicio si cumple el tiempo, caso contrario cancelara un
                 proporcional del costo de instalación.</strong>
@@ -492,7 +503,6 @@
             En el caso en que su queja, reclamo o solicitud no hayan sido resueltos por el prestador del servicio, en relación a la calidad del servicio prestado, a errores de facturación de los servicios, facturación de servicios no contratados, cobros indebidos, o en
         </p>
 
-        <div style="page-break-after: always;"></div>
         <p style="margin-top: 0px; margin-bottom: 6px; line-height: 1.2;">
             general por cualquier irregularidad que se hubiere producido en relación con el servicio contratado, los abonados, clientes o suscriptores podrán presentar las mismas a través de cualquiera de los siguientes canales de atención:<br>
             Plataforma GOB.EC<br><br>
@@ -580,7 +590,7 @@
                             <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
                         </div>
                     @else
-                        <div style="height: 25px;"></div>
+                        <div style="height: 60px;"></div>
                     @endif
                     <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
                         PRESTADOR
@@ -590,12 +600,12 @@
                     @if($signatureImg)
                         <img src="{{ $signatureImg }}" style="max-height: 38px; width: auto; margin-bottom: -6px;"><br>
                     @else
-                        <div style="height: 25px;"></div>
+                        <div style="height: 60px;"></div>
                     @endif
                     ____________________________________<br>
                     <span style="font-size: 8pt; font-weight: bold;">
                         {{ mb_strtoupper($contract->client->nombre) }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
-                        C.I. {{ $contract->client->cedula }}<br>
+                        {{ $contract->client->tipo_identificacion }} {{ $contract->client->cedula }}<br>
                         ABONADO/SUSCRIPTOR
                     </span>
                 </td>
@@ -697,7 +707,20 @@
         <div style="font-size: 7.5pt; margin-bottom: 4px;">
             <span style="border: 1px solid #000; padding: 1px 4px; font-weight: bold;">Beneficios por permanencia</span>
             &nbsp;&nbsp;&nbsp;
-            <span style="border: 1px solid #000; padding: 1px 10px; display: inline-block; width: 220px; height: 12px; vertical-align: middle;"></span>
+            @php
+                $esTerceraEdad = isset($contract->plan) && (
+                    $contract->plan->es_promocional ||
+                    !empty($contract->beneficio_ley) ||
+                    \Illuminate\Support\Str::contains(strtoupper($contract->plan->nombre_plan ?? ''), 'TERCERA EDAD')
+                );
+            @endphp
+            @if($esTerceraEdad)
+                <span style="border: 1px solid #000; padding: 1px 6px; font-weight: bold;">
+                    Tarifa preferencial tercera edad: ${{ number_format($contract->plan->precio ?? 15, 2) }}/mes (Precio regular ${{ number_format($contract->plan->precio_regular ?? 30, 2) }}/mes)
+                </span>
+            @else
+                <span style="border: 1px solid #000; padding: 1px 10px; display: inline-block; width: 220px; height: 12px; vertical-align: middle;"></span>
+            @endif
         </div>
 
         <div style="font-size: 8pt; font-weight: bold; border: 1px solid #000; padding: 1px 4px; background-color: #f2f2f2; margin-bottom: 3px;">
@@ -807,293 +830,9 @@
                     @endif
                     <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 2px;">
                         {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
-                        C.I.: {{ $contract->client->cedula ?? '' }}
+                        {{ $contract->client->tipo_identificacion ?? 'C.I.' }}: {{ $contract->client->cedula ?? '' }}
                     </div>
                     <div style="border: 1px solid #000; padding: 1px; text-align: center; font-weight: bold; font-size: 7.5pt; width: 160px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
-                </td>
-            </tr>
-        </table>
-
-        {{-- ANEXO 2 --}}
-        <div class="page-break"></div>
-        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px;">ANEXO 2</div>
-        <div style="text-align: center; font-weight: bold; font-size: 10pt; margin-bottom: 15px;">
-            ARRENDAMIENTO O COMPRA DE EQUIPOS
-        </div>
-
-        <div style="font-weight: bold; font-size: 9pt; margin-bottom: 6px;">
-            DETALLE Y CONDICIONES DE EQUIPOS:
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
-            <tr>
-                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 14%;">CANTIDAD</th>
-                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 16%;">PRECIO UNITARIO</th>
-                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 20%;">MARCA</th>
-                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 20%;">MODELO</th>
-                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 16%;">SERIAL</th>
-                <th style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-weight: bold; width: 14%;">NUEVO/USADO</th>
-            </tr>
-            @php
-                $equiposList = ($contract->anexo2 && is_array($contract->anexo2->equipos) && count($contract->anexo2->equipos) > 0)
-                    ? $contract->anexo2->equipos
-                    : (is_array($contract->equipos) ? $contract->equipos : []);
-                $minRows = max(3, count($equiposList));
-            @endphp
-            @for($i = 0; $i < $minRows; $i++)
-                @php $eq = $equiposList[$i] ?? null; @endphp
-                <tr>
-                    <td style="border: 1px solid #000; padding: 4px 6px; height: 18px;">{{ $eq['cantidad'] ?? '' }}</td>
-                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ isset($eq['precio_unitario']) ? '$' . number_format($eq['precio_unitario'], 2) : '' }}</td>
-                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['marca'] ?? '') }}</td>
-                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['modelo'] ?? '') }}</td>
-                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['serial'] ?? '') }}</td>
-                    <td style="border: 1px solid #000; padding: 4px 6px;">{{ mb_strtoupper($eq['estado_equipo'] ?? '') }}</td>
-                </tr>
-            @endfor
-        </table>
-
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">CLIENTE NOS COMPRA EQUIPOS A CREDITO</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
-                    SI: {{ ($contract->anexo2 && $contract->anexo2->compra_credito) ? 'X' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
-                    NO: {{ ($contract->anexo2 && !$contract->anexo2->compra_credito) ? 'X' : '' }}
-                </td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">CLIENTE NOS ARRIENDA EQUIPOS</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    SI: {{ ($contract->anexo2 && $contract->anexo2->arrendamiento) ? 'X' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    NO: {{ ($contract->anexo2 && !$contract->anexo2->arrendamiento) ? 'X' : '' }}
-                </td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">CLIENTE NOS COMPRA EQUIPOS DE CONTADO:</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    SI: {{ ($contract->anexo2 && $contract->anexo2->compra_contado) ? 'X' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    NO: {{ ($contract->anexo2 && !$contract->anexo2->compra_contado) ? 'X' : '' }}
-                </td>
-            </tr>
-        </table>
-
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 8.5pt;">
-            <tr>
-                <th style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 35%; text-align: left;">VALOR MENSUAL POR ARRENDAMIENTO</th>
-                <th style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 35%; text-align: left;">VALOR MENSUAL POR COMPRA A CREDITO</th>
-                <th style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 30%; text-align: left;">CANTIDAD DE MESES POR COBRAR</th>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; height: 18px;">
-                    {{ ($contract->anexo2 && $contract->anexo2->valor_mensual_arrendamiento > 0) ? '$' . number_format($contract->anexo2->valor_mensual_arrendamiento, 2) : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px;">
-                    {{ ($contract->anexo2 && $contract->anexo2->valor_mensual_compra_credito > 0) ? '$' . number_format($contract->anexo2->valor_mensual_compra_credito, 2) : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px;">
-                    {{ ($contract->anexo2 && $contract->anexo2->cantidad_meses) ? $contract->anexo2->cantidad_meses : '' }}
-                </td>
-            </tr>
-        </table>
-
-        <div style="font-size: 8.5pt; margin-bottom: 30px;">
-            Autorización expresa de las partes:
-        </div>
-
-        {{-- Firmas --}}
-        <table style="width: 100%; border: none; margin-top: 10px;">
-            <tr style="border: none;">
-                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
-                    @if($providerSigImg)
-                        <div style="text-align: center; margin-bottom: 4px;">
-                            <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
-                        </div>
-                    @else
-                        <div style="height: 20px;"></div>
-                    @endif
-                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
-                </td>
-                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
-                    @if($signatureImg)
-                        <div style="text-align: center; margin-bottom: 4px;">
-                            <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
-                        </div>
-                    @else
-                        <div style="height: 20px;"></div>
-                    @endif
-                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
-                        {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
-                        C.I.: {{ $contract->client->cedula ?? '' }}
-                    </div>
-                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
-                </td>
-            </tr>
-        </table>
-
-        {{-- ANEXO 3 --}}
-        <div class="page-break"></div>
-        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px;">ANEXO 3</div>
-        <div style="text-align: center; font-weight: bold; font-size: 10pt; margin-bottom: 15px;">
-            ACTA DE INSTALACION Y ACTIVACION
-        </div>
-
-        {{-- Dynamic Info Fields --}}
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt;">
-            <tr>
-                <td style="font-weight: bold; width: 28%; padding: 4px 0; vertical-align: middle;">Fecha y hora de instalación:</td>
-                <td style="padding: 4px 0;">
-                    <div style="border: 1px solid #000; padding: 3px 8px; width: 90%;">
-                        {{ \Carbon\Carbon::parse($contract->anexo2->completado_en ?? $contract->fecha)->format('d/m/Y') }}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold; padding: 4px 0; vertical-align: middle;">Lugar de la instalación:</td>
-                <td style="padding: 4px 0;">
-                    <div style="border: 1px solid #000; padding: 3px 8px; width: 98%;">
-                        {{ $contract->direccion_servicio ?? $contract->direccion_instalacion ?? $contract->client->direccion }}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold; padding: 4px 0; vertical-align: middle;">IP asignada al cliente:</td>
-                <td style="padding: 4px 0;">
-                    <div style="border: 1px solid #000; padding: 3px 8px; width: 90%; height: 16px;">
-                        {{ $contract->anexo2->datos_anexo3['ip_asignada'] ?? '' }}
-                    </div>
-                </td>
-            </tr>
-        </table>
-
-        @php
-            $a3 = $contract->anexo2->datos_anexo3 ?? [];
-            $verificoBanda = isset($a3['verifico_ancho_banda']) ? (bool)$a3['verifico_ancho_banda'] : true;
-            $puestaTierra = isset($a3['puesta_a_tierra']) ? (bool)$a3['puesta_a_tierra'] : false;
-            $bloqueoWeb = $a3['bloqueo_web'] ?? 'No';
-            $bloqueoServicios = $a3['bloqueo_servicios'] ?? 'No';
-            $bloqueoPuertos = $a3['bloqueo_puertos'] ?? 'No';
-        @endphp
-
-        {{-- Table 1 --}}
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">Cliente verificó ancho de banda instalado</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
-                    SI {{ $verificoBanda ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
-                    NO {{ !$verificoBanda ? 'x' : '' }}
-                </td>
-            </tr>
-        </table>
-
-        {{-- Table 2 --}}
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">Características de la computadora del cliente</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; width: 55%; height: 35px; vertical-align: top;">
-                    {{ $a3['caracteristicas_pc'] ?? '' }}
-                </td>
-            </tr>
-        </table>
-
-        {{-- Table 3 --}}
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 8.5pt;">
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 45%;">Cliente tiene puesta a tierra</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
-                    SI {{ $puestaTierra ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 27.5%;">
-                    NO {{ !$puestaTierra ? 'x' : '' }}
-                </td>
-            </tr>
-        </table>
-
-        {{-- Table 4: Bloqueos y Material --}}
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 8.5pt;">
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 40%;">Cliente pide bloqueo de páginas web</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 8%; text-align: center;">
-                    SI {{ ($bloqueoWeb != 'No' && $bloqueoWeb != '') ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 12%;">
-                    NO {{ ($bloqueoWeb == 'No' || $bloqueoWeb == '') ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; width: 40%;">
-                    DETALLE: {{ ($bloqueoWeb != 'No') ? $bloqueoWeb : '' }}
-                </td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">Cliente pide bloqueo de servicios</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; text-align: center;">
-                    SI {{ ($bloqueoServicios != 'No' && $bloqueoServicios != '') ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    NO {{ ($bloqueoServicios == 'No' || $bloqueoServicios == '') ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    DETALLE: {{ ($bloqueoServicios != 'No') ? $bloqueoServicios : '' }}
-                </td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">Cliente pide bloqueo de puertos</td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; text-align: center;">
-                    SI {{ ($bloqueoPuertos != 'No' && $bloqueoPuertos != '') ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    NO {{ ($bloqueoPuertos == 'No' || $bloqueoPuertos == '') ? 'x' : '' }}
-                </td>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold;">
-                    DETALLE: {{ ($bloqueoPuertos != 'No') ? $bloqueoPuertos : '' }}
-                </td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #000; padding: 4px 6px; font-weight: bold; vertical-align: top;">
-                    DETALLE DE MATERIAL UTILIZADO PARA INSTALACION POR PARTE DE PRESTADOR
-                </td>
-                <td colspan="3" style="border: 1px solid #000; padding: 4px 6px; height: 40px; vertical-align: top;">
-                    {{ $a3['material_utilizado'] ?? '' }}
-                </td>
-            </tr>
-        </table>
-
-        <div style="font-size: 8.5pt; margin-bottom: 30px;">
-            Autorización expresa de las partes:
-        </div>
-
-        {{-- Firmas --}}
-        <table style="width: 100%; border: none; margin-top: 10px;">
-            <tr style="border: none;">
-                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
-                    @if($providerSigImg)
-                        <div style="text-align: center; margin-bottom: 4px;">
-                            <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
-                        </div>
-                    @else
-                        <div style="height: 20px;"></div>
-                    @endif
-                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
-                </td>
-                <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
-                    @if($signatureImg)
-                        <div style="text-align: center; margin-bottom: 4px;">
-                            <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
-                        </div>
-                    @else
-                        <div style="height: 20px;"></div>
-                    @endif
-                    <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
-                        {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
-                        C.I.: {{ $contract->client->cedula ?? '' }}
-                    </div>
-                    <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
                 </td>
             </tr>
         </table>
@@ -1143,22 +882,22 @@
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 7.5pt;">
             <tr>
                 <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold; width: 35%;">BANCO:</td>
-                <td style="border: 1px solid #000; padding: 2px 5px; width: 32.5%;">{{ $isTransfer ? mb_strtoupper($dp['banco'] ?? '') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; width: 32.5%;">{{ $isTransfer ? mb_strtoupper($dp['banco'] ?? 'BANCO PICHINCHA') : '' }}</td>
                 <td style="border: 1px solid #000; padding: 2px 5px; width: 32.5%;">{{ $isTransfer ? mb_strtoupper($dp['banco_2'] ?? '') : '' }}</td>
             </tr>
             <tr>
-                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">TIPO DE CUENTA:</td>
-                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['tipo_cuenta'] ?? '') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">TIPO DE CUENTA / SERVICIO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['tipo_cuenta'] ?? 'MI VECINO') : '' }}</td>
                 <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['tipo_cuenta_2'] ?? '') : '' }}</td>
             </tr>
             <tr>
-                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NUMERO DE CUENTA:</td>
-                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? ($dp['numero_cuenta'] ?? '') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NÚMERO DE CUENTA / CÓDIGO ÚNICO:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">{{ $isTransfer ? ($dp['codigo_unico'] ?? $dp['numero_cuenta'] ?? '95149') : '' }}</td>
                 <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? ($dp['numero_cuenta_2'] ?? '') : '' }}</td>
             </tr>
             <tr>
-                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NOMBRE DE PRESTADOR:</td>
-                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['nombre_prestador'] ?? 'LUCIA DEL SOCORRO URBANO URBANO') : '' }}</td>
+                <td style="border: 1px solid #000; padding: 2px 5px; font-weight: bold;">NOMBRE DE PRESTADOR / EMPRESA:</td>
+                <td style="border: 1px solid #000; padding: 2px 5px;">{{ $isTransfer ? mb_strtoupper($dp['nombre_prestador'] ?? 'FIBERCOM ECUADOR') : '' }}</td>
                 <td style="border: 1px solid #000; padding: 2px 5px;"></td>
             </tr>
             <tr>
@@ -1168,7 +907,7 @@
             </tr>
         </table>
         <div style="font-size: 7.5pt; margin-bottom: 12px; line-height: 1.2;">
-            Se enviará foto del deposito o transferencia al numero celular de contacto del Prestador N° <strong>0990303604</strong>, se enviará factura al correo electrónico del prestador, <span style="color: #0066cc; text-decoration: underline;">ventas@fibercom.ec</span>
+            Se enviará foto del comprobante o captura de transferencia al número celular de contacto del Prestador N° <strong>0996034510 / 0990303604</strong>, se enviará factura al correo electrónico del prestador, <span style="color: #0066cc; text-decoration: underline;">ventas@fibercom.ec</span>
         </div>
 
         {{-- Section 2 --}}
@@ -1252,7 +991,7 @@
                             <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
                         </div>
                     @else
-                        <div style="height: 20px;"></div>
+                        <div style="height: 60px;"></div>
                     @endif
                     <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
                 </td>
@@ -1262,11 +1001,11 @@
                             <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
                         </div>
                     @else
-                        <div style="height: 20px;"></div>
+                        <div style="height: 60px;"></div>
                     @endif
                     <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
                         {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
-                        C.I.: {{ $contract->client->cedula ?? '' }}
+                        {{ $contract->client->tipo_identificacion ?? 'C.I.' }}: {{ $contract->client->cedula ?? '' }}
                     </div>
                     <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
                 </td>
@@ -1281,20 +1020,20 @@
             Autorización expresa de uso de información personal
         </div>
 
-        <p style="font-size: 8.5pt; text-align: justify; line-height: 1.4; margin-bottom: 35px;">
+        <p style="font-size: 9pt; text-align: justify; line-height: 1.4; margin-bottom: 20px;">
             El abonado/suscriptor por medio de este anexo, deja en constancia que autoriza al Prestador, basado en el Artículo 121 del Reglamento General a Ley Orgánica de Telecomunicaciones, y en la Ley Orgánica de Protección de Datos Personales, su Reglamento General y las directrices emitidas por la Autoridad de Protección de Datos, al uso de datos o información personal a la cual tiene acceso El Prestador del abonado/suscriptor.
         </p>
 
-        <p style="font-size: 8.5pt; text-align: justify; line-height: 1.4; margin-bottom: 50px;">
+        <p style="font-size: 9pt; text-align: justify; line-height: 1.4; margin-bottom: 20px;">
             Esta autorización rige a partir de la fecha de suscripción de este contrato de adhesión. La información personal sólo será utilizada para promociones de planes o premios que sortee El Prestador y la información sólo será publicada en la página web oficial del Prestador, en cualquier momento, El abonado/suscriptor, podrá revocar su consentimiento y lo comunicará a través de medios físicos o electrónicos al Prestador, sin que el Prestador pueda condicionar o establecer requisitos para tal fin, adicionales a la simple voluntad del abonado/suscriptor.
         </p>
 
-        <div style="font-size: 8.5pt; margin-bottom: 120px;">
+        <div style="font-size: 9pt; line-height: 1.4; margin-bottom: 10px;">
             Fecha de validez {{ $contract->fecha ? \Carbon\Carbon::parse($contract->fecha)->format('d/m/Y') : '' }}
         </div>
 
         {{-- Signatures --}}
-        <table style="width: 100%; border: none; margin-top: 20px;">
+        <table style="width: 100%; border: none; margin-top: 50px;">
             <tr style="border: none;">
                 <td style="border: none; width: 50%; text-align: center; vertical-align: bottom; padding: 0;">
                     @if($providerSigImg)
@@ -1302,7 +1041,7 @@
                             <img src="{{ $providerSigImg }}" style="max-height: 40px; width: auto;">
                         </div>
                     @else
-                        <div style="height: 20px;"></div>
+                        <div style="height: 60px;"></div>
                     @endif
                     <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 140px; margin: 0 auto;">PRESTADOR</div>
                 </td>
@@ -1312,11 +1051,11 @@
                             <img src="{{ $signatureImg }}" style="max-height: 40px; width: auto;">
                         </div>
                     @else
-                        <div style="height: 20px;"></div>
+                        <div style="height: 60px;"></div>
                     @endif
                     <div style="font-size: 7.5pt; font-weight: bold; line-height: 1.2; margin-bottom: 4px;">
                         {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
-                        C.I.: {{ $contract->client->cedula ?? '' }}
+                        {{ $contract->client->tipo_identificacion ?? 'C.I.' }}: {{ $contract->client->cedula ?? '' }}
                     </div>
                     <div style="border: 1px solid #000; padding: 2px; text-align: center; font-weight: bold; font-size: 8pt; width: 180px; margin: 0 auto;">ABONADO/SUSCRIPTOR</div>
                 </td>
@@ -1325,7 +1064,7 @@
 
         {{-- NOTAS IMPORTANTES DEL SERVICIO Y EQUIPOS --}}
         <div class="page-break"></div>
-        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-top: 10px; margin-bottom: 25px;">
+        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-top: 10px; margin-bottom: 10px;">
             NOTAS IMPORTANTES DEL SERVICIO Y EQUIPOS
         </div>
 
@@ -1382,7 +1121,7 @@
             <p style="margin-bottom: 6px; text-align: justify;">
                 •El cliente activo no podrá mover o cambiar de posición los equipos exteriores (antena) sea este en el mismo lugar de domicilio o a otro domicilio, sin previo aviso, el cliente debe llamar para pedir una vista técnica.
             </p>
-            <p style="margin-bottom: 35px; text-align: justify;">
+            <p style="margin-bottom: 6px; text-align: justify;">
                 •El personal de SIGNAL INTERNET/FIBERCOM ECUADOR está autorizado para Instalar el Servicio de Internet y cobrar SOLO los valores detallados en dicho documento.
             </p>
 
@@ -1394,34 +1133,35 @@
             </p>
         </div>
 
-        {{-- FINAL PAGE: NOTAS FINALES Y AUTORIZACIÓN TITULAR --}}
-        <div class="page-break"></div>
 
-        <div style="font-size: 8.5pt; line-height: 1.4; color: #000; margin-top: 10px;">
+        {{-- NOTAS FINALES Y AUTORIZACIÓN TITULAR (continúan en la misma hoja) --}}
+
+        <div style="font-size: 8.5pt; line-height: 1.4; color: #000; margin-top: 6px;">
             <p style="margin-bottom: 8px; text-align: justify;">
                 •Los planes HOME NO deben usarse para reventa de servicio en Cybers café o similares, una vez detectado se facturará el valor restante acumulado el Plan Pymes desde el primer día de contrato, sin perjuicios de que la ARCOTEL establezca sanciones según establece la Ley Especial de Telecomunicaciones.
             </p>
             <p style="margin-bottom: 8px; text-align: justify;">
                 <strong>•FORMAS DE PAGO: La forma de pago se realiza los primeros días (1 al 6) de cada mes, en oficinas de la ciudad de Guaranda, en caso de transferencia o depósito bancario a la CTA. CTE. Bco. Pichincha # 2100224953 a nombre de LUCIA URBANO URBANO, después realizada la transferencia o el pago llamar PBX: (03) 3033680 o WhatsApp 099 6034510, 0990303604 para confirmar el número de documento o control.</strong>
             </p>
-            <p style="margin-bottom: 40px; text-align: justify;">
+            <p style="margin-bottom: 8px; text-align: justify;">
                 <strong>•Horarios de atención GUARANDA: lunes a viernes de 8:00am a 17:00pm en horario continuo, sábados de 9:00 am a 13:00 pm</strong>
             </p>
         </div>
 
         {{-- AUTORIZACIÓN TITULAR --}}
-        <div style="text-align: center; font-weight: bold; font-size: 10.5pt; margin-bottom: 20px;">
+        <div style="text-align: center; font-weight: bold; font-size: 10.5pt; margin-bottom: 20px; page-break-before: always;">
             AUTORIZACIÓN TITULAR
         </div>
 
-        <p style="font-size: 8.5pt; text-align: justify; line-height: 1.4; margin-bottom: 60px;">
+        <p style="font-size: 8.5pt; text-align: justify; line-height: 1.4; margin-bottom: 20px;">
             Autorizo(amos) expresa e irrevocablemente a LUCIA DEL SOCORRO URBANO URBANO – SIGNAL INTERNET o a quien sea en el futuro el cesionario, beneficiario o acreedor del crédito solicitado o del documento o titulado cambiario que lo respalde para que obtenga cuantas veces sean necesarias, de cualquier fuente de información, incluidos los buros de crédito, mi información de riesgos crediticios, de igual forma LUCIA DEL SOCORRO URBANO URBANO – SIGNAL INTERNET o a quien sea en el futuro el cesionario, beneficiario o acreedor del crédito solicitado o del documento o título cambiario que lo respalde, que expresamente autorizado para que pueda transferir o entregar dicha información a los burós de crédito y/o a la Central de Riesgos si fuera pertinente.
         </p>
 
-        <div style="font-size: 8.5pt; line-height: 1.5;">
-            --------------------------------------------------<br>
-            NOMBRE: {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
-            CI: {{ $contract->client->cedula ?? '' }}
+        <div style="font-size: 8.5pt; line-height: 1.5; margin-top: 120px;">
+            <div style="border-top: 1px solid #000; width: 40%; padding-top: 4px; font-weight: bold;">
+                NOMBRE: {{ mb_strtoupper($contract->client->nombre ?? '') }} {{ mb_strtoupper($contract->client->apellido ?? '') }}<br>
+                {{ $contract->client->tipo_identificacion ?? 'CI' }}: {{ $contract->client->cedula ?? '' }}
+            </div>
         </div>
 
     </main>

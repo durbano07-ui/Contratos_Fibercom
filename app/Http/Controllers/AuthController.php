@@ -24,17 +24,16 @@ class AuthController extends Controller
 
         $cedula = $request->cedula;
 
-        // Validar algoritmo de cédula ecuatoriana
-        if (!$this->validarCedulaEcuatoriana($cedula)) {
-            return back()->withErrors([
-                'cedula' => 'El número de cédula ingresado no es válido.',
-            ])->onlyInput('cedula');
-        }
-
         // Buscar usuario por cédula
         $user = User::where('cedula', $cedula)->first();
 
         if (!$user) {
+            if (!$this->validarCedulaEcuatoriana($cedula)) {
+                return back()->withErrors([
+                    'cedula' => 'El número de cédula ingresado no es válido.',
+                ])->onlyInput('cedula');
+            }
+
             return back()->withErrors([
                 'cedula' => 'No existe un usuario registrado con ese número de cédula.',
             ])->onlyInput('cedula');

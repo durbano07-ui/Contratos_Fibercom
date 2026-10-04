@@ -503,7 +503,7 @@
         <div class="mb-6">
             <div class="flex justify-between text-[9px] font-black uppercase tracking-widest opacity-50 mb-1.5">
                 <span>Progreso del formulario</span>
-                <span id="progress-label">0 / 4 secciones</span>
+                <span id="progress-label">0 / 3 secciones</span>
             </div>
             <div class="progress-bar-track">
                 <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
@@ -532,7 +532,7 @@
                 <div class="section-card" data-section="equipos">
                     <div class="section-header active" onclick="toggleSection(this)">
                         <span class="section-num">01</span>
-                        <span class="section-title">Equipos Instalados</span>
+                        <span class="section-title">Equipos Instalados (Opcional)</span>
                         <span class="section-status active-badge" id="status-equipos">En curso</span>
                         <span class="material-symbols-outlined section-chevron">expand_more</span>
                     </div>
@@ -554,7 +554,7 @@
                                         <div class="grid grid-cols-2 gap-3 mb-3">
                                             <div class="field-group">
                                                 <label>Tipo de Equipo</label>
-                                                <select name="equipos[0][categoria]" required>
+                                                <select name="equipos[0][categoria]">
                                                     <option value="Router">Router</option>
                                                     <option value="ONU">ONU</option>
                                                     <option value="Roseta">Roseta</option>
@@ -563,7 +563,7 @@
                                             </div>
                                             <div class="field-group">
                                                 <label>Estado</label>
-                                                <select name="equipos[0][estado_equipo]" required>
+                                                <select name="equipos[0][estado_equipo]">
                                                     <option value="Nuevo">Nuevo</option>
                                                     <option value="Usado">Usado</option>
                                                 </select>
@@ -573,11 +573,11 @@
                                         <div class="grid grid-cols-2 gap-3 mb-3">
                                             <div class="field-group">
                                                 <label>Marca</label>
-                                                <input type="text" name="equipos[0][marca]" placeholder="Ej: TP-Link" required>
+                                                <input type="text" name="equipos[0][marca]" placeholder="Ej: TP-Link">
                                             </div>
                                             <div class="field-group">
                                                 <label>Modelo</label>
-                                                <input type="text" name="equipos[0][modelo]" placeholder="Ej: Archer C6" required>
+                                                <input type="text" name="equipos[0][modelo]" placeholder="Ej: Archer C6">
                                             </div>
                                         </div>
 
@@ -604,69 +604,12 @@
                 </div>
 
                 {{-- ===========================================
-                SECCIÓN 02: MODALIDAD Y VALORES
-                =========================================== --}}
-                <div class="section-card" data-section="modalidad">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <span class="section-num">02</span>
-                        <span class="section-title">Modalidad y Valores</span>
-                        <span class="section-status pending" id="status-modalidad">Pendiente</span>
-                        <span class="material-symbols-outlined section-chevron">expand_more</span>
-                    </div>
-                    <div class="section-body" id="body-modalidad">
-                        <div class="section-body-inner space-y-5">
-
-                            <div>
-                                <p class="inner-section-title">Tipo de Adquisición</p>
-                                <div class="space-y-2.5">
-                                    <label class="check-card">
-                                        <input type="checkbox" name="compra_contado" value="1">
-                                        <span class="check-label">Compra de Contado</span>
-                                    </label>
-                                    <label class="check-card">
-                                        <input type="checkbox" name="arrendamiento" value="1">
-                                        <span class="check-label">Arrendamiento</span>
-                                    </label>
-                                    <label class="check-card">
-                                        <input type="checkbox" name="compra_credito" value="1">
-                                        <span class="check-label">Compra a Crédito</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div>
-                                <p class="inner-section-title">Valores Financieros</p>
-                                <div class="space-y-3">
-                                    <div class="field-group">
-                                        <label>Valor Mensual Arrendamiento</label>
-                                        <div class="input-with-prefix">
-                                            <span class="prefix">$</span>
-                                            <input type="number" step="0.01" name="valor_mensual_arrendamiento"
-                                                value="0.00">
-                                        </div>
-                                    </div>
-                                    <div class="field-group">
-                                        <label>Valor Mensual Pago Diferido</label>
-                                        <div class="input-with-prefix">
-                                            <span class="prefix">$</span>
-                                            <input type="number" step="0.01" name="valor_mensual_compra_credito"
-                                                value="0.00">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ===========================================
-                SECCIÓN 03: ACTA DE INSTALACIÓN (ANEXO 3)
+                SECCIÓN 02: ACTA DE INSTALACIÓN (ANEXO 3)
                 =========================================== --}}
                 <div class="section-card" data-section="instalacion">
                     <div class="section-header" onclick="toggleSection(this)">
-                        <span class="section-num">03</span>
-                        <span class="section-title">Acta de Instalación</span>
+                        <span class="section-num">02</span>
+                        <span class="section-title">Acta de Instalación (Opcional)</span>
                         <span class="section-status pending" id="status-instalacion">Pendiente</span>
                         <span class="material-symbols-outlined section-chevron">expand_more</span>
                     </div>
@@ -680,18 +623,13 @@
 
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="check-card">
-                                    <input type="checkbox" name="datos_anexo3[verifico_ancho_banda]" value="1">
+                                    <input type="checkbox" name="datos_anexo3[verifico_ancho_banda]" value="1" checked>
                                     <span class="check-label">Verificó ancho de banda</span>
                                 </label>
                                 <label class="check-card">
                                     <input type="checkbox" name="datos_anexo3[puesta_a_tierra]" value="1">
                                     <span class="check-label">Tiene puesta a tierra</span>
                                 </label>
-                            </div>
-
-                            <div class="field-group">
-                                <label>Características de la Computadora</label>
-                                <input type="text" name="datos_anexo3[caracteristicas_pc]" placeholder="Ej: Laptop Dell, i5, 8GB RAM">
                             </div>
 
                             <div class="space-y-3">
@@ -712,37 +650,30 @@
                                 </div>
                             </div>
 
-                            <div class="field-group">
-                                <label>Material Utilizado / Observaciones</label>
-                                <textarea name="datos_anexo3[material_utilizado]" 
-                                    class="w-full bg-white border border-[#c4c7c7] rounded-md p-3 text-sm font-bold"
-                                    rows="3" placeholder="Detalle del material extra..."></textarea>
-                            </div>
-
                         </div>
                     </div>
                 </div>
 
                 {{-- ===========================================
-                SECCIÓN 04: FIRMA DEL CLIENTE
+                SECCIÓN 03: FIRMA DEL CLIENTE
                 =========================================== --}}
                 <div class="section-card" data-section="firma">
                     <div class="section-header" onclick="toggleSection(this)">
-                        <span class="section-num">04</span>
-                        <span class="section-title">Firma del Cliente</span>
+                        <span class="section-num">03</span>
+                        <span class="section-title">Firma del Cliente (Opcional)</span>
                         <span class="section-status pending" id="status-firma">Pendiente</span>
                         <span class="material-symbols-outlined section-chevron">expand_more</span>
                     </div>
                     <div class="section-body" id="body-firma">
                         <div class="section-body-inner">
-                            <p class="inner-section-title">El cliente debe firmar a continuación</p>
+                            <p class="inner-section-title">Firma táctil o digital del abonado</p>
                             <div class="signature-container">
                                 <canvas id="signature-pad" class="signature-pad"></canvas>
                                 <div class="signature-actions">
                                     <button type="button" class="btn-clear" id="clear-signature">Limpiar Firma</button>
                                 </div>
                             </div>
-                            <input type="hidden" name="firma_cliente" id="firma_cliente_input" required>
+                            <input type="hidden" name="firma_cliente" id="firma_cliente_input">
                             <p class="text-[10px] opacity-50 mt-3 text-center uppercase font-bold tracking-widest">
                                 Use su dedo o un lápiz óptico para firmar dentro del recuadro
                             </p>
@@ -805,7 +736,7 @@
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div class="field-group">
                         <label>Tipo de Equipo</label>
-                        <select name="equipos[${idx}][categoria]" required>
+                        <select name="equipos[${idx}][categoria]">
                             <option value="Router">Router</option>
                             <option value="ONU">ONU</option>
                             <option value="Roseta">Roseta</option>
@@ -814,7 +745,7 @@
                     </div>
                     <div class="field-group">
                         <label>Estado</label>
-                        <select name="equipos[${idx}][estado_equipo]" required>
+                        <select name="equipos[${idx}][estado_equipo]">
                             <option value="Nuevo">Nuevo</option>
                             <option value="Usado">Usado</option>
                         </select>
@@ -824,11 +755,11 @@
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div class="field-group">
                         <label>Marca</label>
-                        <input type="text" name="equipos[${idx}][marca]" placeholder="Ej: TP-Link" required>
+                        <input type="text" name="equipos[${idx}][marca]" placeholder="Ej: TP-Link">
                     </div>
                     <div class="field-group">
                         <label>Modelo</label>
-                        <input type="text" name="equipos[${idx}][modelo]" placeholder="Ej: Archer C6" required>
+                        <input type="text" name="equipos[${idx}][modelo]" placeholder="Ej: Archer C6">
                     </div>
                 </div>
 
@@ -857,11 +788,6 @@
             equiposList.addEventListener('click', function (e) {
                 const btn = e.target.closest('.remove-equipo');
                 if (!btn) return;
-                const cards = equiposList.querySelectorAll('.equipo-card');
-                if (cards.length <= 1) {
-                    alert('Debes registrar al menos un equipo instalado.');
-                    return;
-                }
                 btn.closest('.equipo-card').remove();
                 // Re-numerar
                 equiposList.querySelectorAll('.equipo-card').forEach((c, i) => {
@@ -875,45 +801,44 @@
         // ------------------------------------------------
         // FIRMA PAD
         // ------------------------------------------------
-        if (typeof SignaturePad === 'undefined') {
-            alert('Error: La librería de firma no se cargó. Verifica tu conexión a internet.');
-        }
-
         const canvas = document.getElementById('signature-pad');
-        const signaturePad = new SignaturePad(canvas, {
-            backgroundColor: 'rgba(255, 255, 255, 0)',
-            penColor: 'rgb(0, 0, 0)'
-        });
+        let signaturePad = null;
+        if (typeof SignaturePad !== 'undefined' && canvas) {
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgba(255, 255, 255, 0)',
+                penColor: 'rgb(0, 0, 0)'
+            });
 
-        function resizeCanvas() {
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            const container = canvas.parentElement;
-            canvas.width = container.offsetWidth * ratio;
-            canvas.height = 200 * ratio; // Altura fija
-            canvas.getContext("2d").scale(ratio, ratio);
-            signaturePad.clear();
-        }
-
-        window.addEventListener("resize", resizeCanvas);
-        // Intentar redimensionar varias veces por si el layout tarda en renderizar
-        resizeCanvas();
-        setTimeout(resizeCanvas, 500);
-        setTimeout(resizeCanvas, 1000);
-
-        document.getElementById('clear-signature').addEventListener('click', () => {
-            signaturePad.clear();
-            document.getElementById('firma_cliente_input').value = '';
-            updateProgress();
-        });
-
-        signaturePad.onEnd = function() {
-            if (!signaturePad.isEmpty()) {
-                document.getElementById('firma_cliente_input').value = signaturePad.toDataURL();
-            } else {
-                document.getElementById('firma_cliente_input').value = '';
+            function resizeCanvas() {
+                if (!canvas) return;
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                const container = canvas.parentElement;
+                canvas.width = container.offsetWidth * ratio;
+                canvas.height = 200 * ratio; // Altura fija
+                canvas.getContext("2d").scale(ratio, ratio);
+                if (signaturePad) signaturePad.clear();
             }
-            updateProgress();
-        };
+
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+            setTimeout(resizeCanvas, 500);
+            setTimeout(resizeCanvas, 1000);
+
+            document.getElementById('clear-signature')?.addEventListener('click', () => {
+                if (signaturePad) signaturePad.clear();
+                document.getElementById('firma_cliente_input').value = '';
+                updateProgress();
+            });
+
+            signaturePad.onEnd = function() {
+                if (!signaturePad.isEmpty()) {
+                    document.getElementById('firma_cliente_input').value = signaturePad.toDataURL();
+                } else {
+                    document.getElementById('firma_cliente_input').value = '';
+                }
+                updateProgress();
+            };
+        }
 
         // ------------------------------------------------
         // BARRA DE PROGRESO
@@ -923,19 +848,19 @@
             if (!body) return false;
             
             if (sectionId === 'firma') {
-                return !signaturePad.isEmpty();
+                return signaturePad && !signaturePad.isEmpty();
             }
 
-            const required = body.querySelectorAll('[required]');
-            if (!required.length) return false;
-            let filled = 0;
-            required.forEach(inp => { if (inp.value && inp.value !== '') filled++; });
-            return filled >= required.length;
+            let hasValues = false;
+            body.querySelectorAll('input[type="text"]').forEach(inp => {
+                if (inp.value && inp.value.trim() !== '') hasValues = true;
+            });
+            return hasValues;
         }
 
         function updateProgress() {
             let done = 0;
-            const sections = ['equipos', 'modalidad', 'instalacion', 'firma'];
+            const sections = ['equipos', 'instalacion', 'firma'];
             sections.forEach(sid => {
                 const status = document.getElementById('status-' + sid);
                 if (!status) return;
@@ -944,11 +869,11 @@
                     status.textContent = 'En curso';
                     status.className = 'section-status active-badge';
                 } else if (isSectionDone(sid)) {
-                    status.textContent = '✓ Listo';
+                    status.textContent = '✓ Llenado';
                     status.className = 'section-status done';
                     done++;
                 } else {
-                    status.textContent = 'Pendiente';
+                    status.textContent = 'Opcional';
                     status.className = 'section-status pending';
                 }
             });
@@ -966,18 +891,14 @@
         });
 
         document.getElementById('anexo2-form')?.addEventListener('submit', function(e) {
-            // Asegurar que la firma se capture antes de enviar
-            if (signaturePad.isEmpty()) {
-                alert('Por favor, pida al cliente que firme el contrato antes de finalizar.');
-                e.preventDefault();
-                return;
+            if (signaturePad && !signaturePad.isEmpty()) {
+                document.getElementById('firma_cliente_input').value = signaturePad.toDataURL();
+            } else {
+                document.getElementById('firma_cliente_input').value = '';
             }
 
-            document.getElementById('firma_cliente_input').value = signaturePad.toDataURL();
-
             const btn = document.querySelector('.btn-submit');
-            btn.innerHTML = '<span class="animate-spin inline-block mr-2">↻</span> Enviando...';
-            console.log('Enviando formulario...');
+            btn.innerHTML = '<span class="animate-spin inline-block mr-2">↻</span> Guardando...';
         });
 
         updateProgress();

@@ -15,7 +15,15 @@ class InternetPlan extends Model
         'id_tipo',
         'nombre_plan',
         'precio',
+        'precio_regular',
+        'es_promocional',
         'velocidad',
+    ];
+
+    protected $casts = [
+        'precio'         => 'float',
+        'precio_regular' => 'float',
+        'es_promocional' => 'boolean',
     ];
 
     public function type()

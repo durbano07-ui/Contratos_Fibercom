@@ -53,14 +53,28 @@
         <tbody class="text-sm font-body">
             @foreach($tipo->plans as $plan)
             <tr class="hover:bg-surface transition-colors {{ $loop->even ? 'bg-surface-container-low/30' : '' }}">
-                <td class="p-4 font-semibold text-primary">{{ $plan->nombre_plan }}</td>
+                <td class="p-4 font-semibold text-primary">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span>{{ $plan->nombre_plan }}</span>
+                        @if($plan->es_promocional || Str::contains(strtoupper($plan->nombre_plan), 'TERCERA EDAD'))
+                            <span class="px-2 py-0.5 bg-secondary text-white text-[9px] font-extrabold rounded-full uppercase tracking-wider shadow-sm">
+                                Promocional
+                            </span>
+                        @endif
+                    </div>
+                </td>
                 <td class="p-4">
                     <span class="flex items-center space-x-1">
                         <span class="material-symbols-outlined text-secondary" style="font-size:16px">speed</span>
                         <span>{{ $plan->velocidad }}</span>
                     </span>
                 </td>
-                <td class="p-4 font-bold">${{ number_format($plan->precio, 2) }}</td>
+                <td class="p-4">
+                    <div class="font-bold text-primary">${{ number_format($plan->precio, 2) }}</div>
+                    @if($plan->precio_regular && $plan->precio_regular > $plan->precio)
+                        <div class="text-[11px] text-outline line-through opacity-70">Reg: ${{ number_format($plan->precio_regular, 2) }}</div>
+                    @endif
+                </td>
                 <td class="p-4">
                     <span class="px-2 py-1 bg-surface-container text-on-surface-variant text-[10px] font-bold rounded-full">
                         {{ $plan->contracts_count ?? $plan->contracts()->count() }} activos

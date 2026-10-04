@@ -14,7 +14,7 @@
                     <h2 class="font-headline font-bold text-xl">Editar Contrato</h2>
                     <p class="text-sm text-on-surface-variant mt-1">
                         Cliente: <strong>{{ $contract->client->nombre ?? '—' }} {{ $contract->client->apellido ?? '' }}</strong>
-                        · Cédula: <strong>{{ $contract->client->cedula ?? '—' }}</strong>
+                        · Cédula/RUC: <strong>{{ $contract->client->cedula ?? '—' }}</strong>
                     </p>
                 </div>
                 <span class="font-bold text-lg text-secondary">
@@ -36,7 +36,7 @@
                         <p class="font-semibold">{{ $contract->client->nombre ?? '—' }} {{ $contract->client->apellido ?? '' }}</p>
                     </div>
                     <div>
-                        <span class="text-outline text-xs">Cédula</span>
+                        <span class="text-outline text-xs">Cédula / RUC</span>
                         <p class="font-semibold">{{ $contract->client->cedula ?? '—' }}</p>
                     </div>
                     <div>
@@ -47,7 +47,31 @@
                         <span class="text-outline text-xs">Operador que creó</span>
                         <p class="font-semibold">{{ $contract->user->name ?? '—' }}</p>
                     </div>
+                    <div class="col-span-2 pt-1 border-t border-outline-variant/20 flex items-center justify-between">
+                        <span class="text-outline text-xs">Técnico Asignado Actualmente:</span>
+                        <span class="font-semibold text-xs px-2.5 py-0.5 rounded-full {{ $contract->tecnico ? 'bg-primary/10 text-primary' : 'bg-surface-container-high text-outline' }}">
+                            {{ $contract->tecnico ? $contract->tecnico->name : 'Ninguno (Sin asignar)' }}
+                        </span>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Técnico Asignado -->
+            <div>
+                <label class="block text-sm font-semibold text-on-surface-variant mb-1.5" for="id_tecnico">
+                    Técnico Asignado (Jefe de Grupo)
+                </label>
+                <select id="id_tecnico" name="id_tecnico"
+                    class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all @error('id_tecnico') border-error @enderror">
+                    <option value="">-- Sin técnico asignado (Opcional) --</option>
+                    @foreach($tecnicos as $tecnico)
+                        <option value="{{ $tecnico->id }}" {{ old('id_tecnico', $contract->id_tecnico) == $tecnico->id ? 'selected' : '' }}>
+                            {{ $tecnico->name }} (C.I. {{ $tecnico->cedula }})
+                        </option>
+                    @endforeach
+                </select>
+                <p class="text-xs text-on-surface-variant mt-1">El técnico asignado tendrá acceso a este contrato en su panel para completar el Anexo 2 (Instalación y Equipos).</p>
+                @error('id_tecnico')<p class="text-error text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
             <!-- Plan de internet -->
@@ -55,7 +79,7 @@
                 <label class="block text-sm font-semibold text-on-surface-variant mb-1.5" for="tipo_conexion">Tipo de Conexión</label>
                 <select id="tipo_conexion"
                     class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all mb-3">
-                    <option value="">Seleccione tipo para filtrar planes...</option>
+                    <option value="">Todos los tipos de conexión...</option>
                     @foreach($tiposConexion as $tipo)
                         <option value="{{ $tipo->id_tipo }}"
                             {{ $contract->plan && $contract->plan->id_tipo == $tipo->id_tipo ? 'selected' : '' }}>
@@ -69,8 +93,8 @@
                     class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all @error('id_plan') border-error @enderror">
                     @foreach($tiposConexion as $tipo)
                         @foreach($tipo->plans as $plan)
-                            <option value="{{ $plan->id_plan }}" {{ old('id_plan', $contract->id_plan) == $plan->id_plan ? 'selected' : '' }}>
-                                {{ $tipo->nombre_tipo }} — {{ $plan->nombre_plan }} ({{ $plan->velocidad }}) · ${{ number_format($plan->precio, 2) }}/mes
+                            <option value="{{ $plan->id_plan }}" data-tipo="{{ $tipo->id_tipo }}" {{ old('id_plan', $contract->id_plan) == $plan->id_plan ? 'selected' : '' }}>
+                                {{ $tipo->nombre_tipo }} — {{ $plan->nombre_plan }} ({{ $plan->velocidad }}) · ${{ number_format($plan->precio, 2) }}/mes{{ ($plan->es_promocional || $plan->precio_regular || Str::contains(strtoupper($plan->nombre_plan), 'TERCERA EDAD')) ? ' [⚡ Precio Promocional - Regular $' . number_format($plan->precio_regular ?? 30, 2) . ']' : '' }}
                             </option>
                         @endforeach
                     @endforeach
@@ -100,4 +124,40 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectTipo = document.getElementById('tipo_conexion');
+        const selectPlan = document.getElementById('id_plan');
+
+        if (selectTipo && selectPlan) {
+            const allOptions = Array.from(selectPlan.options);
+
+            function filterPlans() {
+                const tipoId = selectTipo.value;
+                const currentSelected = selectPlan.value;
+                let foundSelected = false;
+
+                selectPlan.innerHTML = '';
+
+                allOptions.forEach(opt => {
+                    if (!tipoId || opt.getAttribute('data-tipo') === tipoId) {
+                        selectPlan.appendChild(opt.cloneNode(true));
+                        if (opt.value === currentSelected) {
+                            foundSelected = true;
+                        }
+                    }
+                });
+
+                if (foundSelected) {
+                    selectPlan.value = currentSelected;
+                } else if (selectPlan.options.length > 0) {
+                    selectPlan.selectedIndex = 0;
+                }
+            }
+
+            selectTipo.addEventListener('change', filterPlans);
+        }
+    });
+</script>
 @endsection

@@ -33,7 +33,10 @@ class ContractService
             } elseif ($paymentMethod === 'card') {
                 $datosPago = array_intersect_key($rawDatosPago, array_flip(['banco_emisor', 'banco_card', 'emisor_card', 'emisor', 'nombre_tarjeta', 'numero_tarjeta', 'codigo_tarjeta', 'codigo_seguridad', 'cvv']));
             } elseif ($paymentMethod === 'transfer') {
-                $datosPago = array_intersect_key($rawDatosPago, array_flip(['banco', 'tipo_cuenta', 'numero_cuenta', 'banco_2', 'tipo_cuenta_2', 'numero_cuenta_2', 'nombre_prestador', 'ruc_prestador']));
+                $rawDatosPago['banco'] = $rawDatosPago['banco'] ?? 'Banco Pichincha';
+                $rawDatosPago['numero_cuenta'] = '95149';
+                $rawDatosPago['codigo_unico'] = '95149';
+                $datosPago = array_intersect_key($rawDatosPago, array_flip(['banco', 'tipo_cuenta', 'numero_cuenta', 'codigo_unico', 'banco_2', 'tipo_cuenta_2', 'numero_cuenta_2', 'nombre_prestador', 'ruc_prestador']));
             }
         }
 

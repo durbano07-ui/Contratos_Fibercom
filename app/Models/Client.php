@@ -26,6 +26,14 @@ class Client extends Model
         'motivo_baja',
     ];
 
+    // --- Identificación ---
+
+    /** Etiqueta del documento según su longitud: 'RUC' (13 dígitos) o 'C.I.' (10 dígitos). */
+    public function getTipoIdentificacionAttribute(): string
+    {
+        return \App\Rules\CedulaRuc::esRuc($this->cedula) ? 'RUC' : 'C.I.';
+    }
+
     // --- Estado helpers ---
 
     public function isActivo(): bool

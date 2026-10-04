@@ -33,11 +33,14 @@ class PlanController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'id_tipo'      => 'required|exists:internet_types,id_tipo',
-            'nombre_plan'  => 'required|string|max:100',
-            'precio'       => 'required|numeric|min:0',
-            'velocidad'    => 'required|string|max:50',
+            'id_tipo'        => 'required|exists:internet_types,id_tipo',
+            'nombre_plan'    => 'required|string|max:100',
+            'precio'         => 'required|numeric|min:0',
+            'precio_regular' => 'nullable|numeric|min:0',
+            'es_promocional' => 'nullable|boolean',
+            'velocidad'      => 'required|string|max:50',
         ]);
+        $data['es_promocional'] = $request->boolean('es_promocional');
 
         InternetPlan::create($data);
 
@@ -63,11 +66,14 @@ class PlanController extends Controller
         $plan = InternetPlan::findOrFail($id);
 
         $data = $request->validate([
-            'id_tipo'     => 'required|exists:internet_types,id_tipo',
-            'nombre_plan' => 'required|string|max:100',
-            'precio'      => 'required|numeric|min:0',
-            'velocidad'   => 'required|string|max:50',
+            'id_tipo'        => 'required|exists:internet_types,id_tipo',
+            'nombre_plan'    => 'required|string|max:100',
+            'precio'         => 'required|numeric|min:0',
+            'precio_regular' => 'nullable|numeric|min:0',
+            'es_promocional' => 'nullable|boolean',
+            'velocidad'      => 'required|string|max:50',
         ]);
+        $data['es_promocional'] = $request->boolean('es_promocional');
 
         $plan->update($data);
 
@@ -109,7 +115,7 @@ class PlanController extends Controller
     public function getByTipo($id)
     {
         $planes = InternetPlan::where('id_tipo', $id)
-            ->select('id_plan', 'nombre_plan', 'precio', 'velocidad')
+            ->select('id_plan', 'nombre_plan', 'precio', 'precio_regular', 'es_promocional', 'velocidad')
             ->orderBy('precio', 'asc')
             ->get();
 
